@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var Log *zap.Logger
+var log *zap.Logger
 
 func Init() {
 	env := os.Getenv("APP_ENV")
@@ -29,5 +29,22 @@ func Init() {
 		panic(err)
 	}
 
-	Log = logger
+	log = logger
+}
+
+
+func InfoLog(msg string, data interface{}) {
+	log.Info(msg,
+		zap.Any("data", data),
+	)
+}
+
+func ErrorLog(msg string, data interface{}) {
+	log.Error(msg,
+		zap.Any("data", data),
+	)
+}
+
+func LoggerSync(){
+	log.Sync();
 }
