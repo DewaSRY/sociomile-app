@@ -12,10 +12,11 @@ import (
 	"time"
 
 	"DewaSRY/sociomile-app/internal/database"
+	"DewaSRY/sociomile-app/internal/routers"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
@@ -45,6 +46,16 @@ func main() {
 
 	logger.Init()
 	database.Connect()
+
+	// // Auto-migrate database models
+	// if err := database.DB.AutoMigrate(&models.User{}); err != nil {
+	// 	logger.ErrorLog("Failed to auto-migrate database", map[string]any{
+	// 		"error": err.Error(),
+	// 	})
+	// 	log.Fatal("Failed to migrate database:", err)
+	// }
+	// logger.InfoLog("Database migration completed", map[string]any{})
+
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
@@ -53,7 +64,8 @@ func main() {
 	r.Use(middleware.AllowContentType("application/json"))
 
 	r.Route("/api/v1", func(r chi.Router) {
-		// userHandler.RegisterRoutes(r)
+		// Register authentication routes
+		routers.RegisterAuthRoutes(r)
 	})
 
 
