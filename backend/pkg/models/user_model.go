@@ -8,13 +8,16 @@ import (
 )
 
 type UserModel struct {
-	ID        uint           `gorm:"primarykey" json:"id"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-	Email     string         `gorm:"uniqueIndex;not null" json:"email"`
-	Password  string         `gorm:"not null" json:"-"`
-	Name      string         `gorm:"not null" json:"name"`
+	ID             uint           `gorm:"primarykey" json:"id"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
+	Email          string         `gorm:"uniqueIndex;not null" json:"email"`
+	Password       string         `gorm:"not null" json:"-"`
+	Name           string         `gorm:"not null" json:"name"`
+	OrganizationID *uint          `gorm:"index" json:"organization_id,omitempty"`
+	RoleID         uint           `gorm:"not null;default:4" json:"role_id"`
+	Role           *UserRoleModel `gorm:"foreignKey:RoleID" json:"role,omitempty"`
 }
 
 func (UserModel) TableName() string {
