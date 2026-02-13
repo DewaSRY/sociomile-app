@@ -3,19 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
+	_ "DewaSRY/sociomile-app/docs"
+
+	"DewaSRY/sociomile-app/internal/config"
 	"DewaSRY/sociomile-app/internal/database"
 	"DewaSRY/sociomile-app/internal/routers"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
-
-	_ "DewaSRY/sociomile-app/docs" // This is required for swagger
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -65,8 +63,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 }
 
 func main() {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
-
+	config := config.Load()
 	logger.Init()
 	database.Connect()
 
@@ -88,7 +85,7 @@ func main() {
 
 	// Swagger documentation
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL(fmt.Sprintf("http://localhost:%d/swagger/doc.json", port)),
+		httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", config.Host)),
 	))
 
 	r.Route("/api/v1", func(r chi.Router) {
@@ -96,9 +93,8 @@ func main() {
 		routers.AuthRouter(r)
 	})
 
-
 	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", port),
+		Addr:         fmt.Sprintf(":%s", config.Port),
 		Handler:      r,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
@@ -108,6 +104,14 @@ func main() {
 	done := make(chan bool, 1)
 	go gracefulShutdown(server, done)
 
+	logger.InfoLog(fmt.Sprintf("json documentation:  %s/swagger/doc.json", config.Host), map[string]any{
+		"message": fmt.Sprintf("Server running in : %s", config.Host),
+	})
+
+	logger.InfoLog(fmt.Sprintf("client documentation: %s/swagger/index.html", config.Host), map[string]any{
+		"message": fmt.Sprintf("Server running in : %s", config.Host),
+	})
+
 	err := server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		logger.ErrorLog("http server error", map[string]any{
@@ -116,6 +120,8 @@ func main() {
 	}
 
 	<-done
-	log.Println("Graceful shutdown complete.")
+	logger.InfoLog("Graceful shutdown complete.", map[string]any{
+		"message": "success",
+	})
 	logger.LoggerSync()
 }

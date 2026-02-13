@@ -20,11 +20,14 @@ func Init() {
 		config = zap.NewDevelopmentConfig()
 	}
 
-	// Better timestamp format
 	config.EncoderConfig.TimeKey = "time"
 	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	logger, err := config.Build()
+	logger, err := config.Build(
+		zap.AddCaller(),
+		zap.AddCallerSkip(2),
+	)
+	
 	if err != nil {
 		panic(err)
 	}
@@ -32,11 +35,13 @@ func Init() {
 	log = logger
 }
 
-
 func InfoLog(msg string, data interface{}) {
-	log.Info(msg,
-		zap.Any("data", data),
-	)
+	func() {
+		log.Info(msg,
+			zap.Any("data", data),
+		)
+	}()
+
 }
 
 func ErrorLog(msg string, data interface{}) {
@@ -45,6 +50,6 @@ func ErrorLog(msg string, data interface{}) {
 	)
 }
 
-func LoggerSync(){
-	log.Sync();
+func LoggerSync() {
+	log.Sync()
 }

@@ -8,7 +8,7 @@ import (
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
-	"DewaSRY/sociomile-app/pkg/lib/utils"
+	"DewaSRY/sociomile-app/pkg/utils"
 )
 
 type AuthHandler struct {
