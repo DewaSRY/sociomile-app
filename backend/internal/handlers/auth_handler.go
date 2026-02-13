@@ -21,6 +21,17 @@ func NewAuthHandler() *AuthHandler {
 	}
 }
 
+// Register godoc
+// @Summary      Register a new user
+// @Description  Register a new user with email, password and name
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body requestdto.RegisterRequest true "Register Request"
+// @Success      201  {object}  responsedto.AuthResponse
+// @Failure      400  {object}  map[string]any
+// @Failure      409  {object}  map[string]any
+// @Router       /auth/register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.RegisterRequest
 
@@ -63,6 +74,17 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusCreated, result)
 }
 
+// Login godoc
+// @Summary      Login user
+// @Description  Authenticate user with email and password
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body requestdto.LoginRequest true "Login Request"
+// @Success      201  {object}  responsedto.AuthResponse
+// @Failure      400  {object}  map[string]any
+// @Failure      409  {object}  map[string]any
+// @Router       /auth/login [post]
 // Login handles user authentication
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.LoginRequest
@@ -103,6 +125,16 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusCreated, result)
 }
 
+// GetProfile godoc
+// @Summary      Get user profile
+// @Description  Get authenticated user's profile information
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      201  {object}  responsedto.UserData
+// @Failure      401  {object}  map[string]any
+// @Router       /auth/profile [get]
 // GetProfile retrieves the authenticated user's profile
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context (set by JWT middleware)
@@ -140,6 +172,16 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusCreated, result)
 }
 
+// RefreshToken godoc
+// @Summary      Refresh JWT token
+// @Description  Generate a new JWT token using existing token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body requestdto.RefreshTokenRequest true "Refresh Token Request"
+// @Success      201  {object}  map[string]string
+// @Failure      400  {object}  map[string]any
+// @Router       /auth/refresh [post]
 // RefreshToken generates a new JWT token
 func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.RefreshTokenRequest

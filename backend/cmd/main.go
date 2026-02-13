@@ -15,9 +15,32 @@ import (
 	"DewaSRY/sociomile-app/internal/routers"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 
+	_ "DewaSRY/sociomile-app/docs" // This is required for swagger
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// @title           Sociomile API
+// @version         1.0
+// @description     This is a Sociomile application server with authentication.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -62,6 +85,11 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.AllowContentType("application/json"))
+
+	// Swagger documentation
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(fmt.Sprintf("http://localhost:%d/swagger/doc.json", port)),
+	))
 
 	r.Route("/api/v1", func(r chi.Router) {
 		// Register authentication routes
