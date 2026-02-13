@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type UserModel struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
@@ -17,8 +17,13 @@ type User struct {
 	Name      string         `gorm:"not null" json:"name"`
 }
 
-// HashPassword hashes the user password before saving
-func (u *User) HashPassword(password string) error {
+func (UserModel) TableName() string {
+	return "users"
+}
+
+
+// HashPassword hashes the UserModel password before saving
+func (u *UserModel) HashPassword(password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -28,13 +33,13 @@ func (u *User) HashPassword(password string) error {
 }
 
 // CheckPassword checks if the provided password matches the hashed password
-func (u *User) CheckPassword(password string) bool {
+func (u *UserModel) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
 }
 
-// BeforeCreate is a GORM hook that runs before creating a new user
-func (u *User) BeforeCreate(tx *gorm.DB) error {
+// BeforeCreate is a GORM hook that runs before creating a new UserModel
+func (u *UserModel) BeforeCreate(tx *gorm.DB) error {
 	if u.Password != "" {
 		return u.HashPassword(u.Password)
 	}

@@ -20,12 +20,12 @@ func NewAuthService() *AuthService {
 
 // Register creates a new user account
 func (s *AuthService) Register(req requestdto.RegisterRequest) (*responsedto.AuthResponse, error) {
-	var existingUser models.User
+	var existingUser models.UserModel
 	if err := database.DB.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user with this email already exists")
 	}
 
-	user := models.User{
+	user := models.UserModel{
 		Email:    req.Email,
 		Name:     req.Name,
 		Password: req.Password, 
@@ -52,7 +52,7 @@ func (s *AuthService) Register(req requestdto.RegisterRequest) (*responsedto.Aut
 
 // Login authenticates a user and returns a JWT token
 func (s *AuthService) Login(req requestdto.LoginRequest) (*responsedto.AuthResponse, error) {
-	var user models.User
+	var user models.UserModel
 	
 	if err := database.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -80,8 +80,8 @@ func (s *AuthService) Login(req requestdto.LoginRequest) (*responsedto.AuthRespo
 	}, nil
 }
 
-func (s *AuthService) GetUserByID(userID uint) (*models.User, error) {
-	var user models.User
+func (s *AuthService) GetUserByID(userID uint) (*models.UserModel, error) {
+	var user models.UserModel
 	if err := database.DB.First(&user, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("user not found")
