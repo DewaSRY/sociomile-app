@@ -2,7 +2,7 @@ package routers
 
 import (
 	"DewaSRY/sociomile-app/internal/handlers"
-	"DewaSRY/sociomile-app/pkg/middleware"
+	"DewaSRY/sociomile-app/internal/middleware"
 
 	"github.com/go-chi/chi/v5"
 )

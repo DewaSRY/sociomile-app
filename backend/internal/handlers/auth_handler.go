@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"DewaSRY/sociomile-app/internal/services"
+	serviceImpl "DewaSRY/sociomile-app/internal/services/impl"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
@@ -12,12 +13,12 @@ import (
 )
 
 type AuthHandler struct {
-	service *services.AuthService
+	service services.AuthService
 }
 
 func NewAuthHandler() *AuthHandler {
 	return &AuthHandler{
-		service: services.NewAuthService(),
+		service: serviceImpl.InstanceAuthServiceImpl(),
 	}
 }
 
