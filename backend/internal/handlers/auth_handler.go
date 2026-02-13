@@ -27,44 +27,47 @@ func NewAuthHandler() *AuthHandler {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request body requestdto.RegisterRequest true "Register Request"
+// @Param        request body   requestdto.RegisterRequest true "Register Request"
 // @Success      201  {object}  responsedto.AuthResponse
-// @Failure      400  {object}  map[string]any
-// @Failure      409  {object}  map[string]any
+// @Failure      400  {object}  responsedto.ErrorResponse
+// @Failure      409  {object}  responsedto.ErrorResponse
 // @Router       /auth/register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.RegisterRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		errorData := map[string]any{
-			"message": "invalid request",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "invalid request",
+			Error:   err.Error(),
+			Code:    http.StatusBadRequest,
 		}
 
 		logger.ErrorLog("Failed to decode request", errorData)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, errorData)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 		return
 	}
 
 	if err := utils.ValidateStruct(req); err != nil {
-		errorData := map[string]any{
-			"message": "invalid request",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "invalid request",
+			Error:   err.Error(),
+			Code:    http.StatusBadRequest,
 		}
-
 		logger.ErrorLog("Failed to validate request", errorData)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, errorData)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 	}
 
 	result, err := h.service.Register(req)
 
 	if err != nil {
-		errorData := map[string]any{
-			"message": "invalid request",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "invalid request",
+			Error:   err.Error(),
+			Code:    http.StatusConflict,
 		}
+
 		logger.ErrorLog("Failed to register user", errorData)
-		utils.WriteErrorResponse(w, http.StatusConflict, errorData)
+		utils.WriteJSONResponse(w, http.StatusConflict, errorData)
 		return
 	}
 
@@ -82,45 +85,45 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request body requestdto.LoginRequest true "Login Request"
 // @Success      201  {object}  responsedto.AuthResponse
-// @Failure      400  {object}  map[string]any
-// @Failure      409  {object}  map[string]any
+// @Failure      400  {object}  responsedto.ErrorResponse
+// @Failure      409  {object}  responsedto.ErrorResponse
 // @Router       /auth/login [post]
 // Login handles user authentication
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.LoginRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		errorData := map[string]any{
-			"message": "invalid request",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "invalid request",
+			Error:   err.Error(),
 		}
 		logger.ErrorLog("Failed to decode request", errorData)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, errorData)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 		return
 	}
 
 	if err := utils.ValidateStruct(req); err != nil {
-		errorData := map[string]any{
-			"message": "invalid request",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "invalid request",
+			Error:   err.Error(),
 		}
 
 		logger.ErrorLog("Failed to validate request", errorData)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, errorData)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 	}
 	result, err := h.service.Login(req)
 	if err != nil {
-		errorData := map[string]any{
-			"message": "invalid request",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "invalid request",
+			Error:   err.Error(),
 		}
 		logger.ErrorLog("Failed to login user", errorData)
-		utils.WriteErrorResponse(w, http.StatusConflict, errorData)
+		utils.WriteJSONResponse(w, http.StatusConflict, errorData)
 		return
 	}
 
 	logger.InfoLog("User login successfully", map[string]any{
-		"email": req.Email,
+		"Message": req.Email,
 	})
 	utils.WriteJSONResponse(w, http.StatusCreated, result)
 }
@@ -133,7 +136,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Security     BearerAuth
 // @Success      201  {object}  responsedto.UserData
-// @Failure      401  {object}  map[string]any
+// @Failure      401  {object}  responsedto.ErrorResponse
 // @Router       /auth/profile [get]
 // GetProfile retrieves the authenticated user's profile
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -141,24 +144,24 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value("userID").(uint)
 
 	if !ok {
-		errorData := map[string]any{
-			"message": "User not authenticated",
-			"error":   "Unauthorized",
+		errorData := responsedto.ErrorResponse{
+			Message: "User not authenticated",
+			Error:   "Unauthorized",
 		}
 		logger.ErrorLog("Failed to authenticate", errorData)
-		utils.WriteErrorResponse(w, http.StatusUnauthorized, errorData)
+		utils.WriteJSONResponse(w, http.StatusUnauthorized, errorData)
 		return
 	}
 
 	user, err := h.service.GetUserByID(userID)
 	if err != nil {
-		errorData := map[string]any{
-			"message": "User not authenticated",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "User not authenticated",
+			Error:   err.Error(),
 		}
 
 		logger.ErrorLog("User not authenticated", errorData)
-		utils.WriteErrorResponse(w, http.StatusUnauthorized, errorData)
+		utils.WriteJSONResponse(w, http.StatusUnauthorized, errorData)
 		return
 	}
 
@@ -180,46 +183,46 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request body requestdto.RefreshTokenRequest true "Refresh Token Request"
 // @Success      201  {object}  map[string]string
-// @Failure      400  {object}  map[string]any
+// @Failure      400  {object}  responsedto.ErrorResponse
 // @Router       /auth/refresh [post]
 // RefreshToken generates a new JWT token
 func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.RefreshTokenRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		errorData := map[string]any{
-			"message": "invalid request",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "invalid request",
+			Error:   err.Error(),
 		}
 
 		logger.ErrorLog("Failed to decode request", errorData)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, errorData)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 		return
 	}
 
 	if req.Token == "" {
-		errorData := map[string]any{
-			"message": "Token is required",
-			"error":   "Bad Request",
+		errorData := responsedto.ErrorResponse{
+			Message: "Token is required",
+			Error:   "Bad Request",
 		}
 		logger.ErrorLog("Failed to decode request", errorData)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, errorData)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 		return
 	}
 
 	newToken, err := h.service.RefreshToken(req.Token)
 	if err != nil {
-		errorData := map[string]any{
-			"message": "Invalid or expired token",
-			"error":   err.Error(),
+		errorData := responsedto.ErrorResponse{
+			Message: "Invalid or expired token",
+			Error:   err.Error(),
 		}
 
 		logger.ErrorLog("Invalid or expired token", errorData)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, errorData)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 		return
 	}
 
-	result:= map[string]string{
+	result := map[string]string{
 		"token": newToken,
 	}
 

@@ -1,11 +1,14 @@
 package responsedto
 
+
 type ErrorResponse struct {
-	Error   string `json:"error"`
-	Message string `json:"message,omitempty"`
+	Message string      `json:"message"`
+	Code    int         `json:"code"`
+	Error   string `json:"error,omitempty"`
 }
 
-type SuccessResponse struct {
+type CommonResponse struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
+	Code    int         `json:"code"`
 }
