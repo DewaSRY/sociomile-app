@@ -184,59 +184,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/guest/conversations": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve a guest conversation",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "guest-conversation"
-                ],
-                "summary": "Get guest conversation",
-                "parameters": [
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationListPaginateResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            },
+        "/conversations": {
             "post": {
                 "security": [
                     {
@@ -251,7 +199,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "guest-conversation"
+                    "conversations"
                 ],
                 "summary": "Create a new conversation",
                 "parameters": [
@@ -269,7 +217,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse"
                         }
                     },
                     "400": {
@@ -287,14 +235,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/guest/conversations/messages": {
+        "/conversations/messages": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Guest user sends a message in their conversation",
+                "description": "Create a new message in a conversation",
                 "consumes": [
                     "application/json"
                 ],
@@ -302,12 +250,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "guest-messages"
+                    "conversations"
                 ],
-                "summary": "Send a message in a conversation",
+                "summary": "Create a message in a conversation",
                 "parameters": [
                     {
-                        "description": "Send Message Request",
+                        "description": "Create Message Request",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -320,7 +268,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageResponse"
                         }
                     },
                     "400": {
@@ -338,14 +286,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/guest/conversations/{id}/messages": {
+        "/conversations/my": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retrieve messages for a specific conversation",
+                "description": "Retrieve all conversations for the authenticated user (guest or staff)",
                 "consumes": [
                     "application/json"
                 ],
@@ -353,9 +301,92 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "guest-messages"
+                    "conversations"
                 ],
-                "summary": "Get conversation messages",
+                "summary": "Get my conversations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/{conversation_id}/tickets": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve all tickets for a conversation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tickets"
+                ],
+                "summary": "Get conversation tickets",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Conversation ID",
+                        "name": "conversation_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a conversation by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "conversations"
+                ],
+                "summary": "Get conversation by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -363,25 +394,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessagePaginateResponse"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse"
                         }
                     },
                     "400": {
@@ -399,14 +418,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/hub/organizations": {
-            "get": {
+        "/conversations/{id}/assign": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retrieve list of organizations with pagination support",
+                "description": "Assign a conversation to a staff member (Organization Owner only)",
                 "consumes": [
                     "application/json"
                 ],
@@ -414,28 +433,38 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Hub"
+                    "conversations"
                 ],
-                "summary": "Get organizations with pagination",
+                "summary": "Assign conversation to staff",
                 "parameters": [
                     {
-                        "minimum": 1,
                         "type": "integer",
-                        "name": "limit",
-                        "in": "query"
+                        "description": "Conversation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     },
                     {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
+                        "description": "Assign Conversation Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.AssignConversationRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationPaginateResponse"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
                         }
                     },
                     "500": {
@@ -445,14 +474,16 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/conversations/{id}/messages": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new organization with owner (Super Admin only)\nType \"Bearer {your token}\" to authorize",
+                "description": "Retrieve all messages for a conversation",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,25 +491,81 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Hub"
+                    "conversations"
                 ],
-                "summary": "Create a new organization",
+                "summary": "Get conversation messages",
                 "parameters": [
                     {
-                        "description": "Create Organization Request",
+                        "type": "integer",
+                        "description": "Conversation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/{id}/status": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update the status of a conversation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "conversations"
+                ],
+                "summary": "Update conversation status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Conversation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Conversation Request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.RegisterOrganizationRequest"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateConversationRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse"
                         }
                     },
                     "400": {
@@ -572,483 +659,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizations/conversations": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve list of conversations for organization with pagination support",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization-conversations"
-                ],
-                "summary": "Get conversations list with pagination",
-                "parameters": [
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationListResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizations/conversations/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve a conversation by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization-conversations"
-                ],
-                "summary": "Get conversation by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Conversation ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizations/conversations/{id}/assign": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Assign a conversation to an organization staff member",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization-conversations"
-                ],
-                "summary": "Assign conversation to staff",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Conversation ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Assign Conversation Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.AssignConversationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizations/conversations/{id}/status": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Update the status of a conversation",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization-conversations"
-                ],
-                "summary": "Update conversation status",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Conversation ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update Conversation Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateConversationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizations/staff": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve list of organizations staff with pagination support",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organizations-staff"
-                ],
-                "summary": "Get organizations staff with pagination",
-                "parameters": [
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationPaginateResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Create a new organization staff (Super Admin only)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organizations-staff"
-                ],
-                "summary": "Create a new organization staff",
-                "parameters": [
-                    {
-                        "description": "Create Organization staff",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.RegisterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizations/ticket": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve list of tickets for organization with pagination support",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization-tickets"
-                ],
-                "summary": "Get tickets list with pagination",
-                "parameters": [
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketListResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Create a new ticket from a conversation",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization-tickets"
-                ],
-                "summary": "Create a new ticket",
-                "parameters": [
-                    {
-                        "description": "Create Ticket Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateTicketRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizations/ticket/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Update a ticket's details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization-tickets"
-                ],
-                "summary": "Update ticket",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Ticket ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update Ticket Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateTicketRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
                         }
@@ -1257,9 +867,426 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/organizations/{organization_id}/conversations": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve all conversations for an organization (Owner/Staff only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "conversations"
+                ],
+                "summary": "Get organization conversations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Organization ID",
+                        "name": "organization_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizations/{organization_id}/tickets": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve all tickets for an organization (Owner/Staff only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tickets"
+                ],
+                "summary": "Get organization tickets",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Organization ID",
+                        "name": "organization_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tickets": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new ticket from a conversation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tickets"
+                ],
+                "summary": "Create a new ticket",
+                "parameters": [
+                    {
+                        "description": "Create Ticket Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateTicketRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tickets/number/{number}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a ticket by its ticket number",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tickets"
+                ],
+                "summary": "Get ticket by number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket Number",
+                        "name": "number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tickets/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a ticket by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tickets"
+                ],
+                "summary": "Get ticket by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update a ticket's details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tickets"
+                ],
+                "summary": "Update ticket",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Ticket Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateTicketRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete a ticket",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tickets"
+                ],
+                "summary": "Delete ticket",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.AssignConversationRequest": {
+            "type": "object",
+            "required": [
+                "organization_staff_id"
+            ],
+            "properties": {
+                "organization_staff_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateConversationMessageRequest": {
+            "type": "object",
+            "required": [
+                "conversation_id",
+                "message"
+            ],
+            "properties": {
+                "conversation_id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string",
+                    "maxLength": 5000,
+                    "minLength": 1
+                }
+            }
+        },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateConversationRequest": {
+            "type": "object",
+            "required": [
+                "organization_id"
+            ],
+            "properties": {
+                "organization_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateOrganizationRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "owner_id"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
+                },
+                "owner_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateTicketRequest": {
+            "type": "object",
+            "required": [
+                "conversation_id",
+                "name"
+            ],
+            "properties": {
+                "conversation_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 3
+                }
+            }
+        },
         "DewaSRY_sociomile-app_pkg_dtos_requestdto.AssignConversationRequest": {
             "type": "object",
             "required": [
@@ -1455,6 +1482,53 @@ const docTemplate = `{
                 }
             }
         },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateConversationRequest": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "in_progress",
+                        "done"
+                    ]
+                }
+            }
+        },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateOrganizationRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
+                }
+            }
+        },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateTicketRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 3
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "in_progress",
+                        "done"
+                    ]
+                }
+            }
+        },
         "DewaSRY_sociomile-app_pkg_dtos_responsedto.AuthResponse": {
             "type": "object",
             "properties": {
@@ -1463,32 +1537,6 @@ const docTemplate = `{
                 },
                 "user": {
                     "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData"
-                }
-            }
-        },
-        "DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationListPaginateResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse"
-                    }
-                },
-                "metadata": {
-                    "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.PaginateMetaData"
                 }
             }
         },
@@ -1506,10 +1554,10 @@ const docTemplate = `{
                 }
             }
         },
-        "DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessagePaginateResponse": {
+        "DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageListResponse": {
             "type": "object",
             "properties": {
-                "data": {
+                "messages": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageResponse"
@@ -1612,40 +1660,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse"
                     }
-                }
-            }
-        },
-        "DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationPaginateResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationRecord"
-                    }
-                },
-                "metadata": {
-                    "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.PaginateMetaData"
-                }
-            }
-        },
-        "DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationRecord": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "owner": {
-                    "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
