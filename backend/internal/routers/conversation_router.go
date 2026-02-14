@@ -8,26 +8,29 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func ConversationRouter(r chi.Router, jwtService jwtUtils.JwtService) {
-	convHandler := handlers.NewConversationHandler()
+type ConversationRouter struct {
+	JwtService          jwtUtils.JwtService
+	ConversationHandler handlers.ConversationHandler
+}
 
+func (t *ConversationRouter) Register(r chi.Router) {
 	r.Route("/conversations", func(r chi.Router) {
-		r.Use(middleware.JWTAuth(jwtService))
+		r.Use(middleware.JWTAuth(t.JwtService))
 
 		// Guest can create conversation
-		r.Post("/", convHandler.CreateConversation)
+		r.Post("/", t.ConversationHandler.CreateConversation)
 
 		// Get user's own conversations
-		r.Get("/my", convHandler.GetMyConversations)
+		r.Get("/my", t.ConversationHandler.GetMyConversations)
 
 		// Message routes
-		r.Post("/messages", convHandler.CreateMessage)
+		r.Post("/messages", t.ConversationHandler.CreateMessage)
 
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", convHandler.GetConversation)
-			r.Put("/status", convHandler.UpdateConversationStatus)
-			r.Post("/assign", convHandler.AssignConversation)
-			r.Get("/messages", convHandler.GetConversationMessages)
+			r.Get("/", t.ConversationHandler.GetConversation)
+			r.Put("/status", t.ConversationHandler.UpdateConversationStatus)
+			r.Post("/assign", t.ConversationHandler.AssignConversation)
+			r.Get("/messages", t.ConversationHandler.GetConversationMessages)
 		})
 	})
 }

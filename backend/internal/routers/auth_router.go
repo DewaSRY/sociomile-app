@@ -8,17 +8,21 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func AuthRouter(r chi.Router, jwtService jwtUtils.JwtService) {
-	authHandler := handlers.NewAuthHandler()
 
+type AuthRouter struct{
+	JwtService  jwtUtils.JwtService
+	AuthHandler handlers.AuthHandler
+}
+
+func(t *AuthRouter) Register(r chi.Router) {
 	r.Route("/auth", func(r chi.Router) {
-		r.Post("/register", authHandler.Register)
-		r.Post("/login", authHandler.Login)
-		r.Post("/refresh", authHandler.RefreshToken)
+		r.Post("/register", t.AuthHandler.Register)
+		r.Post("/login", t.AuthHandler.Login)
+		r.Post("/refresh", t.AuthHandler.RefreshToken)
 
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.JWTAuth(jwtService))
-			r.Get("/profile", authHandler.GetProfile)
+			r.Use(middleware.JWTAuth(t.JwtService))
+			r.Get("/profile", t.AuthHandler.GetProfile)
 		})
 	})
 }

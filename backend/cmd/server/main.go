@@ -12,6 +12,7 @@ import (
 
 	"DewaSRY/sociomile-app/internal/config"
 	"DewaSRY/sociomile-app/internal/database"
+	"DewaSRY/sociomile-app/internal/handlers"
 	"DewaSRY/sociomile-app/internal/routers"
 	jwtUtils "DewaSRY/sociomile-app/pkg/lib/jwt"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
@@ -64,27 +65,44 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 }
 
 func main() {
+	// setup 
 	config := config.Load()
 	logger.Init()
 	database.Connect()
 
-	// // Auto-migrate database models
-	// if err := database.DB.AutoMigrate(&models.User{}); err != nil {
-	// 	logger.ErrorLog("Failed to auto-migrate database", map[string]any{
-	// 		"error": err.Error(),
-	// 	})
-	// 	log.Fatal("Failed to migrate database:", err)
-	// }
-	// logger.InfoLog("Database migration completed", map[string]any{})
+	// app context 
+	jwtServiceInstance := jwtUtils.InstanceJwtService()
+	authHandler := handlers.NewAuthHandler();
+	conversationHandler := handlers.NewConversationHandler();
+	organizationHandler := handlers.NewOrganizationHandler();
+	ticketHandler:= handlers.NewTicketHandler();
+	
+	authRouter:= routers.AuthRouter{
+		JwtService: jwtServiceInstance,
+		AuthHandler: *authHandler,
+	}
 
+	conversationRouter := routers.ConversationRouter{
+		JwtService: jwtServiceInstance,
+		ConversationHandler: *conversationHandler,
+	}
+
+	organizationRouter:= routers.OrganizationRouter{
+		JwtService: jwtServiceInstance,
+		OrganizationHandler: *organizationHandler,
+	}
+
+	tickerRouter:= routers.TicketRouter{
+		JwtService: jwtServiceInstance,
+		TicketHandler: *ticketHandler,
+	}
+
+	// server register
 	r := chi.NewRouter()
-
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.AllowContentType("application/json"))
-
-	jwtSErviceInstance := jwtUtils.InstanceJwtService()
 
 	// Swagger documentation
 	r.Get("/swagger/*", httpSwagger.Handler(
@@ -92,10 +110,10 @@ func main() {
 	))
 
 	r.Route("/api/v1", func(r chi.Router) {
-		routers.AuthRouter(r, jwtSErviceInstance)
-		routers.OrganizationRouter(r, jwtSErviceInstance)
-		routers.ConversationRouter(r, jwtSErviceInstance)
-		routers.TicketRouter(r, jwtSErviceInstance)
+		authRouter.Register(r)
+		conversationRouter.Register(r)
+		organizationRouter.Register(r)
+		tickerRouter.Register(r)
 	})
 
 	server := &http.Server{

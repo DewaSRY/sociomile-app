@@ -9,19 +9,23 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func TicketRouter(r chi.Router, jwtService jwtUtils.JwtService) {
-	ticketHandler := handlers.NewTicketHandler()
+type TicketRouter struct{
+	JwtService jwtUtils.JwtService
+	TicketHandler handlers.TicketHandler
+}
+
+func (t*TicketRouter) Register (r chi.Router) {
 
 	r.Route("/tickets", func(r chi.Router) {
-		r.Use(middleware.JWTAuth(jwtService))
+		r.Use(middleware.JWTAuth(t.JwtService))
 
-		r.Post("/", ticketHandler.CreateTicket)
-		r.Get("/number/{number}", ticketHandler.GetTicketByNumber)
+		r.Post("/", t.TicketHandler.CreateTicket)
+		r.Get("/number/{number}", t.TicketHandler.GetTicketByNumber)
 
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", ticketHandler.GetTicket)
-			r.Put("/", ticketHandler.UpdateTicket)
-			r.Delete("/", ticketHandler.DeleteTicket)
+			r.Get("/", t.TicketHandler.GetTicket)
+			r.Put("/", t.TicketHandler.UpdateTicket)
+			r.Delete("/", t.TicketHandler.DeleteTicket)
 		})
 	})
 }

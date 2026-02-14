@@ -9,20 +9,24 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func OrganizationRouter(r chi.Router, jwtService jwtUtils.JwtService) {
-	orgHandler := handlers.NewOrganizationHandler()
+type OrganizationRouter struct{
+	JwtService	jwtUtils.JwtService
+	OrganizationHandler handlers.OrganizationHandler
+}
+
+func (t *OrganizationRouter) Register(r chi.Router) {
 
 	r.Route("/organizations", func(r chi.Router) {
-		r.Use(middleware.JWTAuth(jwtService))
+		r.Use(middleware.JWTAuth(t.JwtService))
 
-		r.Post("/", orgHandler.CreateOrganization)
-		r.Get("/", orgHandler.GetAllOrganizations)
+		r.Post("/", t.OrganizationHandler.CreateOrganization)
+		r.Get("/", t.OrganizationHandler.GetAllOrganizations)
 
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", orgHandler.GetOrganization)
-			r.Put("/", orgHandler.UpdateOrganization)
-			r.Delete("/", orgHandler.DeleteOrganization)
-			r.Get("/stats", orgHandler.GetOrganizationStats)
+			r.Get("/", t.OrganizationHandler.GetOrganization)
+			r.Put("/", t.OrganizationHandler.UpdateOrganization)
+			r.Delete("/", t.OrganizationHandler.DeleteOrganization)
+			r.Get("/stats", t.OrganizationHandler.GetOrganizationStats)
 		})
 	})
 }
