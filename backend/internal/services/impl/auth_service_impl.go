@@ -47,7 +47,7 @@ func (t *authServiceImpl) Register(req requestdto.RegisterRequest) (*responsedto
 		return nil, errors.New("failed to create user")
 	}
 
-	token, err := t.jwtService.GenerateToken(user.ID, user.Email, user.RoleID)
+	token, err := t.jwtService.GenerateToken(user.ID, user.Email, user.RoleID, user.OrganizationID)
 	if err != nil {
 		return nil, errors.New("failed to generate token")
 	}
@@ -76,7 +76,7 @@ func (t *authServiceImpl) Login(req requestdto.LoginRequest) (*responsedto.AuthR
 		return nil, errors.New("invalid email or password")
 	}
 
-	token, err := t.jwtService.GenerateToken(user.ID, user.Email, user.RoleID)
+	token, err := t.jwtService.GenerateToken(user.ID, user.Email, user.RoleID, user.OrganizationID)
 	if err != nil {
 		return nil, errors.New("failed to generate token")
 	}

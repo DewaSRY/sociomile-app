@@ -13,6 +13,7 @@ import (
 	"DewaSRY/sociomile-app/internal/config"
 	"DewaSRY/sociomile-app/internal/database"
 	"DewaSRY/sociomile-app/internal/routers"
+	jwtUtils "DewaSRY/sociomile-app/pkg/lib/jwt"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 
 	"github.com/go-chi/chi/v5"
@@ -83,16 +84,18 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.AllowContentType("application/json"))
 
+	jwtSErviceInstance := jwtUtils.InstanceJwtService()
+
 	// Swagger documentation
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL(fmt.Sprintf("%s/swagger/doc.json", config.Host)),
 	))
 
 	r.Route("/api/v1", func(r chi.Router) {
-		routers.AuthRouter(r)
-		routers.OrganizationRouter(r)
-		routers.ConversationRouter(r)
-		routers.TicketRouter(r)
+		routers.AuthRouter(r, jwtSErviceInstance)
+		routers.OrganizationRouter(r, jwtSErviceInstance)
+		routers.ConversationRouter(r, jwtSErviceInstance)
+		routers.TicketRouter(r, jwtSErviceInstance)
 	})
 
 	server := &http.Server{

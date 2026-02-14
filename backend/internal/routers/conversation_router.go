@@ -3,15 +3,16 @@ package routers
 import (
 	"DewaSRY/sociomile-app/internal/handlers"
 	"DewaSRY/sociomile-app/internal/middleware"
+	jwtUtils "DewaSRY/sociomile-app/pkg/lib/jwt"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func ConversationRouter(r chi.Router) {
+func ConversationRouter(r chi.Router, jwtService jwtUtils.JwtService) {
 	convHandler := handlers.NewConversationHandler()
 
 	r.Route("/conversations", func(r chi.Router) {
-		r.Use(middleware.JWTAuth)
+		r.Use(middleware.JWTAuth(jwtService))
 
 		// Guest can create conversation
 		r.Post("/", convHandler.CreateConversation)

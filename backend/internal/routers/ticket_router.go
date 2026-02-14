@@ -4,14 +4,16 @@ import (
 	"DewaSRY/sociomile-app/internal/handlers"
 	"DewaSRY/sociomile-app/internal/middleware"
 
+	jwtUtils "DewaSRY/sociomile-app/pkg/lib/jwt"
+
 	"github.com/go-chi/chi/v5"
 )
 
-func TicketRouter(r chi.Router) {
+func TicketRouter(r chi.Router, jwtService jwtUtils.JwtService) {
 	ticketHandler := handlers.NewTicketHandler()
 
 	r.Route("/tickets", func(r chi.Router) {
-		r.Use(middleware.JWTAuth)
+		r.Use(middleware.JWTAuth(jwtService))
 
 		r.Post("/", ticketHandler.CreateTicket)
 		r.Get("/number/{number}", ticketHandler.GetTicketByNumber)

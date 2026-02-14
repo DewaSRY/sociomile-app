@@ -4,14 +4,16 @@ import (
 	"DewaSRY/sociomile-app/internal/handlers"
 	"DewaSRY/sociomile-app/internal/middleware"
 
+	jwtUtils "DewaSRY/sociomile-app/pkg/lib/jwt"
+
 	"github.com/go-chi/chi/v5"
 )
 
-func OrganizationRouter(r chi.Router) {
+func OrganizationRouter(r chi.Router, jwtService jwtUtils.JwtService) {
 	orgHandler := handlers.NewOrganizationHandler()
 
 	r.Route("/organizations", func(r chi.Router) {
-		r.Use(middleware.JWTAuth)
+		r.Use(middleware.JWTAuth(jwtService))
 
 		r.Post("/", orgHandler.CreateOrganization)
 		r.Get("/", orgHandler.GetAllOrganizations)
