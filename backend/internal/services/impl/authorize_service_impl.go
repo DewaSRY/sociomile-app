@@ -17,14 +17,13 @@ type authorizeServiceImpl struct {
 func (t *authorizeServiceImpl) IsUserAuthorize(roleId uint, allowedRoles []string) error {
 	var userRole models.UserRoleModel
 
-	// Correct GORM error handling
 	if err := t.db.First(&userRole, roleId).Error; err != nil {
 		return errors.New("not authorized")
 	}
 
-	// Clean role check
 	if !slices.Contains(allowedRoles, userRole.Name) {
-		return errors.New("not authorized")
+
+		return errors.New("not authorized because not in allowed")
 	}
 
 	return nil

@@ -85,7 +85,7 @@ func SeedInitialData() error {
 		Email:    "owner@techcorp.com",
 		Password: "password123",
 		RoleID:   ownerRole.ID,
-	}
+}
 
 	if err := db.Create(&orgOwner).Error; err != nil {
 		return fmt.Errorf("failed to create organization owner: %v", err)

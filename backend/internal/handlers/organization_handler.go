@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"DewaSRY/sociomile-app/internal/services"
+	_ "DewaSRY/sociomile-app/pkg/dtos/filtersdto"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
@@ -15,17 +16,16 @@ import (
 )
 
 type OrganizationHandler struct {
-	service services.OrganizationCrudService
+	service             services.OrganizationCrudService
 }
 
 func NewOrganizationHandler(
 	service services.OrganizationCrudService,
 ) *OrganizationHandler {
 	return &OrganizationHandler{
-		service: service,
+		service:             service,
 	}
 }
-
 // CreateOrganization godoc
 // @Summary      Create a new organization
 // @Description  Create a new organization with owner (Super Admin only)

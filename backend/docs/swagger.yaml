@@ -1009,6 +1009,67 @@ paths:
       summary: Get organization tickets
       tags:
       - tickets
+  /organizations/staff:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve list of organizations staff with pagination support
+      parameters:
+      - in: query
+        minimum: 1
+        name: limit
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationPaginateResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get organizations staff with pagination
+      tags:
+      - organizations-staff
+    post:
+      consumes:
+      - application/json
+      description: Create a new organization staff (Super Admin only)
+      parameters:
+      - description: Create Organization staff
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new organization staff
+      tags:
+      - organizations-staff
   /tickets:
     post:
       consumes:

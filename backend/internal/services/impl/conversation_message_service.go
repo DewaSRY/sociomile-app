@@ -16,7 +16,7 @@ type conversationMessageServiceImpl struct {
 
 // CreateMessage implements services.ConversationMessageService.
 func (t *conversationMessageServiceImpl) CreateMessage(userID uint, req requestdto.CreateConversationMessageRequest) (*responsedto.ConversationMessageResponse, error) {
-		var conversation models.ConversationModel
+	var conversation models.ConversationModel
 	if err := database.DB.First(&conversation, req.ConversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("conversation not found")

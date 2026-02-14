@@ -6,7 +6,6 @@ import (
 	jwtutil "DewaSRY/sociomile-app/pkg/lib/jwt"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 	"DewaSRY/sociomile-app/pkg/utils"
-	"fmt"
 	"net/http"
 )
 
@@ -14,9 +13,6 @@ func Authorize(jwtSvc jwtutil.JwtService, authorizeSvc services.AuthorizeService
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			user, err := jwtSvc.GetUserFromContext(r.Context())
-			
-			fmt.Println(" the calim get ", user, err)
-			fmt.Println("do thete is error ", err)
 
 			if err {
 				errorResponse := responsedto.ErrorResponse{
@@ -28,13 +24,10 @@ func Authorize(jwtSvc jwtutil.JwtService, authorizeSvc services.AuthorizeService
 				utils.WriteJSONResponse(w, http.StatusInternalServerError, errorResponse)
 				return
 			}
-
-			fmt.Println("user role is ", user.RoleID)
-			fmt.Print("test test ")
-			if err := authorizeSvc.IsUserAuthorize(1, allowedRoles); err != nil {
+			if err := authorizeSvc.IsUserAuthorize(user.RoleID, allowedRoles); err != nil {
 				errorResponse := responsedto.ErrorResponse{
 					Message: "Not authorize",
-					Error:   "Not authorize",
+					Error:   err.Error(),
 					Code:    http.StatusInternalServerError,
 				}
 				logger.ErrorLog("Not authorize", errorResponse)

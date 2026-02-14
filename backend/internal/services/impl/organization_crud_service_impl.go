@@ -12,11 +12,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type organizationServiceImpl struct {
+type organizationCrudServiceImpl struct {
 }
 
 // CreateOrganization implements services.OrganizationService.
-func (t *organizationServiceImpl) CreateOrganization(req requestdto.CreateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
+func (t *organizationCrudServiceImpl) CreateOrganization(req requestdto.CreateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
 	var owner models.UserModel
 	if err := database.DB.First(&owner, req.OwnerID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -48,7 +48,7 @@ func (t *organizationServiceImpl) CreateOrganization(req requestdto.CreateOrgani
 }
 
 // CreateOwnerUser implements services.OrganizationService.
-func (t *organizationServiceImpl) CreateOwnerUser(email string, name string, password string) (*models.UserModel, error) {
+func (t *organizationCrudServiceImpl) CreateOwnerUser(email string, name string, password string) (*models.UserModel, error) {
 	var existingUser models.UserModel
 	if err := database.DB.Where("email = ?", email).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user with this email already exists")
@@ -74,7 +74,7 @@ func (t *organizationServiceImpl) CreateOwnerUser(email string, name string, pas
 }
 
 // DeleteOrganization implements services.OrganizationService.
-func (t *organizationServiceImpl) DeleteOrganization(id uint) error {
+func (t *organizationCrudServiceImpl) DeleteOrganization(id uint) error {
 	var organization models.OrganizationModel
 	if err := database.DB.First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -91,7 +91,7 @@ func (t *organizationServiceImpl) DeleteOrganization(id uint) error {
 }
 
 // GetAllOrganizations implements services.OrganizationService.
-func (t *organizationServiceImpl) GetAllOrganizations() (*responsedto.OrganizationListResponse, error) {
+func (t *organizationCrudServiceImpl) GetAllOrganizations() (*responsedto.OrganizationListResponse, error) {
 	var organizations []models.OrganizationModel
 	if err := database.DB.Preload("Owner").Find(&organizations).Error; err != nil {
 		return nil, errors.New("failed to fetch organizations")
@@ -113,7 +113,7 @@ func (t *organizationServiceImpl) GetAllOrganizations() (*responsedto.Organizati
 }
 
 // GetOrganizationByID implements services.OrganizationService.
-func (t *organizationServiceImpl) GetOrganizationByID(id uint) (*responsedto.OrganizationResponse, error) {
+func (t *organizationCrudServiceImpl) GetOrganizationByID(id uint) (*responsedto.OrganizationResponse, error) {
 	var organization models.OrganizationModel
 	if err := database.DB.Preload("Owner").First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -126,7 +126,7 @@ func (t *organizationServiceImpl) GetOrganizationByID(id uint) (*responsedto.Org
 }
 
 // GetOrganizationStats implements services.OrganizationService.
-func (t *organizationServiceImpl) GetOrganizationStats(organizationID uint) (map[string]interface{}, error) {
+func (t *organizationCrudServiceImpl) GetOrganizationStats(organizationID uint) (map[string]interface{}, error) {
 	var totalConversations int64
 	var totalTickets int64
 	var pendingConversations int64
@@ -165,7 +165,7 @@ func (t *organizationServiceImpl) GetOrganizationStats(organizationID uint) (map
 }
 
 // UpdateOrganization implements services.OrganizationService.
-func (t *organizationServiceImpl) UpdateOrganization(id uint, req requestdto.UpdateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
+func (t *organizationCrudServiceImpl) UpdateOrganization(id uint, req requestdto.UpdateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
 	var organization models.OrganizationModel
 	if err := database.DB.First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -187,7 +187,7 @@ func (t *organizationServiceImpl) UpdateOrganization(id uint, req requestdto.Upd
 	return t.mapToOrganizationResponse(&organization), nil
 }
 
-func (t *organizationServiceImpl) mapToOrganizationResponse(org *models.OrganizationModel) *responsedto.OrganizationResponse {
+func (t *organizationCrudServiceImpl) mapToOrganizationResponse(org *models.OrganizationModel) *responsedto.OrganizationResponse {
 	response := &responsedto.OrganizationResponse{
 		ID:        org.ID,
 		Name:      org.Name,
@@ -207,6 +207,6 @@ func (t *organizationServiceImpl) mapToOrganizationResponse(org *models.Organiza
 	return response
 }
 
-func NewOrganizationService() services.OrganizationCrudService {
-	return &organizationServiceImpl{}
+func NewOrganizationCrudService() services.OrganizationCrudService {
+	return &organizationCrudServiceImpl{}
 }
