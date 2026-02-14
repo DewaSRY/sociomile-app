@@ -18,7 +18,6 @@ func (UserRoleModel) TableName() string {
 	return "user_roles"
 }
 
-// Constants for role names
 const (
 	RoleSuperAdmin       = "super_admin"
 	RoleOrganizationOwner = "organization_owner"

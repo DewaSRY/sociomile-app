@@ -26,12 +26,10 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     name VARCHAR(255) NOT NULL,
-    organization_id BIGINT UNSIGNED ,
+    organization_id BIGINT UNSIGNED NULL,
     role_id BIGINT UNSIGNED NOT NULL DEFAULT 4,
     INDEX idx_users_organization_id (organization_id),
-    INDEX idx_users_role_id (role_id),
-    FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE RESTRICT,
-    FOREIGN KEY (role_id) REFERENCES user_roles(id) ON DELETE RESTRICT,
+    INDEX idx_users_role_id (role_id)
 );
 
 CREATE TABLE organizations (
@@ -42,8 +40,7 @@ CREATE TABLE organizations (
     name VARCHAR(255) NOT NULL,
     owner_id BIGINT UNSIGNED NOT NULL,
     INDEX idx_organizations_deleted_at (deleted_at),
-    INDEX idx_organizations_owner_id (owner_id),
-    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT
+    INDEX idx_organizations_owner_id (owner_id)
 );
 
 CREATE TABLE conversations (
@@ -59,10 +56,7 @@ CREATE TABLE conversations (
     INDEX idx_conversations_organization_id (organization_id),
     INDEX idx_conversations_guest_id (guest_id),
     INDEX idx_conversations_organization_staff_id (organization_staff_id),
-    INDEX idx_conversations_status (status),
-    FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
-    FOREIGN KEY (guest_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (organization_staff_id) REFERENCES users(id) ON DELETE SET NULL
+    INDEX idx_conversations_status (status)
 );
 
 CREATE TABLE conversation_messages (
@@ -77,10 +71,7 @@ CREATE TABLE conversation_messages (
     INDEX idx_conversation_messages_deleted_at (deleted_at),
     INDEX idx_conversation_messages_organization_id (organization_id),
     INDEX idx_conversation_messages_conversation_id (conversation_id),
-    INDEX idx_conversation_messages_created_by_id (created_by_id),
-    FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
-    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
-    FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
+    INDEX idx_conversation_messages_created_by_id (created_by_id)
 );
 
 CREATE TABLE tickets (
@@ -99,19 +90,62 @@ CREATE TABLE tickets (
     INDEX idx_tickets_conversation_id (conversation_id),
     INDEX idx_tickets_created_by_id (created_by_id),
     INDEX idx_tickets_ticket_number (ticket_number),
-    INDEX idx_tickets_status (status),
-    FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
-    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
-    FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
+    INDEX idx_tickets_status (status)
 );
+
+ALTER TABLE users
+    ADD CONSTRAINT fk_users_role_id FOREIGN KEY (role_id) REFERENCES user_roles(id) ON DELETE RESTRICT,
+    ADD CONSTRAINT fk_users_organization_id FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE SET NULL;
+
+ALTER TABLE organizations
+    ADD CONSTRAINT fk_organizations_owner_id FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT;
+
+ALTER TABLE conversations
+    ADD CONSTRAINT fk_conversations_organization_id FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_conversations_guest_id FOREIGN KEY (guest_id) REFERENCES users(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_conversations_organization_staff_id FOREIGN KEY (organization_staff_id) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE conversation_messages
+    ADD CONSTRAINT fk_conversation_messages_organization_id FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_conversation_messages_conversation_id FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_conversation_messages_created_by_id FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE tickets
+    ADD CONSTRAINT fk_tickets_organization_id FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_tickets_conversation_id FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_tickets_created_by_id FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE;
 
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'down SQL query';
-DROP TABLE IF EXISTS users;
+-- +goose StatementEnd
+
+ALTER TABLE tickets
+    DROP FOREIGN KEY fk_tickets_created_by_id,
+    DROP FOREIGN KEY fk_tickets_conversation_id,
+    DROP FOREIGN KEY fk_tickets_organization_id;
+
+ALTER TABLE conversation_messages
+    DROP FOREIGN KEY fk_conversation_messages_created_by_id,
+    DROP FOREIGN KEY fk_conversation_messages_conversation_id,
+    DROP FOREIGN KEY fk_conversation_messages_organization_id;
+
+ALTER TABLE conversations
+    DROP FOREIGN KEY fk_conversations_organization_staff_id,
+    DROP FOREIGN KEY fk_conversations_guest_id,
+    DROP FOREIGN KEY fk_conversations_organization_id;
+
+ALTER TABLE organizations
+    DROP FOREIGN KEY fk_organizations_owner_id;
+
+ALTER TABLE users
+    DROP FOREIGN KEY fk_users_organization_id,
+    DROP FOREIGN KEY fk_users_role_id;
+
 DROP TABLE IF EXISTS tickets;
 DROP TABLE IF EXISTS conversation_messages;
 DROP TABLE IF EXISTS conversations;
 DROP TABLE IF EXISTS organizations;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS user_roles;
 

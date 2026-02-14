@@ -19,7 +19,7 @@ type authServiceImpl struct{
 }
 
 
-func InstanceAuthServiceImpl() services.AuthService {
+func InstanceAuthService() services.AuthService {
 	return &authServiceImpl{
 		jwtService: jwtLib.InstanceJwtService(),
 	}

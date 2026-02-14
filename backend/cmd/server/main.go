@@ -89,8 +89,10 @@ func main() {
 	))
 
 	r.Route("/api/v1", func(r chi.Router) {
-		// Register authentication routes
 		routers.AuthRouter(r)
+		routers.OrganizationRouter(r)
+		routers.ConversationRouter(r)
+		routers.TicketRouter(r)
 	})
 
 	server := &http.Server{
