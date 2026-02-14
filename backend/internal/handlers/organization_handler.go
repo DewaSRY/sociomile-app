@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"DewaSRY/sociomile-app/internal/services"
-	serviceImpl "DewaSRY/sociomile-app/internal/services/impl"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
@@ -19,9 +18,11 @@ type OrganizationHandler struct {
 	service services.OrganizationService
 }
 
-func NewOrganizationHandler() *OrganizationHandler {
+func NewOrganizationHandler(
+	service services.OrganizationService,
+) *OrganizationHandler {
 	return &OrganizationHandler{
-		service: serviceImpl.InstanceOrganizationService(),
+		service: service,
 	}
 }
 

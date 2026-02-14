@@ -11,8 +11,6 @@ import (
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 	"DewaSRY/sociomile-app/pkg/utils"
 
-	serviceImpl "DewaSRY/sociomile-app/internal/services/impl"
-
 	"github.com/go-chi/chi/v5"
 )
 
@@ -20,9 +18,11 @@ type TicketHandler struct {
 	service services.TicketService
 }
 
-func NewTicketHandler() *TicketHandler {
+func NewTicketHandler(
+	service services.TicketService,
+) *TicketHandler {
 	return &TicketHandler{
-		service: serviceImpl.InstanceTicketService(),
+		service: service,
 	}
 }
 

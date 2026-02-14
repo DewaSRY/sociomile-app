@@ -14,6 +14,7 @@ import (
 	"DewaSRY/sociomile-app/internal/database"
 	"DewaSRY/sociomile-app/internal/handlers"
 	"DewaSRY/sociomile-app/internal/routers"
+	serviceImpl "DewaSRY/sociomile-app/internal/services/impl"
 	jwtUtils "DewaSRY/sociomile-app/pkg/lib/jwt"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 
@@ -72,10 +73,18 @@ func main() {
 
 	// app context 
 	jwtServiceInstance := jwtUtils.InstanceJwtService()
-	authHandler := handlers.NewAuthHandler();
-	conversationHandler := handlers.NewConversationHandler();
-	organizationHandler := handlers.NewOrganizationHandler();
-	ticketHandler:= handlers.NewTicketHandler();
+
+	authServiceSvc := serviceImpl.InstanceAuthService(jwtServiceInstance)
+	conversationSvc :=  serviceImpl.InstanceConversationService();
+	conversationMessageSvc :=  serviceImpl.InstanceConversationMessageService();
+	organizationSvc := serviceImpl.InstanceOrganizationService();
+	tickerSvc := serviceImpl.InstanceTicketService()
+
+
+	authHandler := handlers.NewAuthHandler(authServiceSvc);
+	conversationHandler := handlers.NewConversationHandler(conversationSvc, conversationMessageSvc);
+	organizationHandler := handlers.NewOrganizationHandler(organizationSvc);
+	ticketHandler:= handlers.NewTicketHandler(tickerSvc);
 	
 	authRouter:= routers.AuthRouter{
 		JwtService: jwtServiceInstance,

@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"DewaSRY/sociomile-app/internal/services"
-	serviceImpl "DewaSRY/sociomile-app/internal/services/impl"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
@@ -20,10 +19,13 @@ type ConversationHandler struct {
 	messageService services.ConversationMessageService
 }
 
-func NewConversationHandler() *ConversationHandler {
+func NewConversationHandler(
+	service        services.ConversationService,
+	messageService services.ConversationMessageService,
+) *ConversationHandler {
 	return &ConversationHandler{
-		service:        serviceImpl.InstanceConversationService(),
-		messageService: serviceImpl.InstanceConversationMessageService(),
+		service:        service,
+		messageService: messageService,
 	}
 }
 
