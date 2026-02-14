@@ -16,7 +16,7 @@ type jwtServiceImp struct {
 // GetUserFromContext implements JwtService.
 func (t *jwtServiceImp) GetUserFromContext(ctx context.Context) (*Claims, bool) {
 	user, ok := ctx.Value(UserContextKey).(*Claims)
-	return user, ok
+	return user, !ok
 }
 
 // GenerateToken implements JwtService.
@@ -74,7 +74,7 @@ func (t *jwtServiceImp) ValidateToken(tokenString string) (*Claims, error) {
 	return nil, errors.New("invalid token")
 }
 
-func InstanceJwtService() JwtService {
+func NewJwtService() JwtService {
 	secret := os.Getenv("JWT_SECRET")
 	return &jwtServiceImp{
 		jwtSecret: secret,

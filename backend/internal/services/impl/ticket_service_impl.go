@@ -213,6 +213,6 @@ func (t *ticketServiceImpl) buildTicketListResponse(tickets []models.TicketModel
 }
 
 
-func InstanceTicketService() services.TicketService {
+func NewTicketService() services.TicketService {
 	return &ticketServiceImpl{}
 }

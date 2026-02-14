@@ -16,7 +16,7 @@ type conversationServiceImpl struct {
 
 // AssignConversation implements services.ConversationService.
 func (t *conversationServiceImpl) AssignConversation(conversationID uint, req requestdto.AssignConversationRequest) (*responsedto.ConversationResponse, error) {
-		var conversation models.ConversationModel
+	var conversation models.ConversationModel
 	if err := database.DB.First(&conversation, conversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("conversation not found")
@@ -95,9 +95,11 @@ func (t *conversationServiceImpl) GetConversationByID(id uint) (*responsedto.Con
 
 // GetConversationsByGuest implements services.ConversationService.
 func (t *conversationServiceImpl) GetConversationsByGuest(guestID uint) (*responsedto.ConversationListResponse, error) {
-		var conversations []models.ConversationModel
+	var conversations []models.ConversationModel
+	
 	if err := database.DB.Where("guest_id = ?", guestID).
-		Preload("Organization").Preload("OrganizationStaff").
+		Preload("Organization").
+		Preload("OrganizationStaff").
 		Order("created_at DESC").
 		Find(&conversations).Error; err != nil {
 		return nil, errors.New("failed to fetch conversations")
@@ -108,7 +110,7 @@ func (t *conversationServiceImpl) GetConversationsByGuest(guestID uint) (*respon
 
 // GetConversationsByOrganization implements services.ConversationService.
 func (t *conversationServiceImpl) GetConversationsByOrganization(organizationID uint) (*responsedto.ConversationListResponse, error) {
-		var conversations []models.ConversationModel
+	var conversations []models.ConversationModel
 	if err := database.DB.Where("organization_id = ?", organizationID).
 		Preload("Guest").Preload("OrganizationStaff").
 		Order("created_at DESC").
@@ -121,7 +123,7 @@ func (t *conversationServiceImpl) GetConversationsByOrganization(organizationID 
 
 // GetConversationsByStaff implements services.ConversationService.
 func (t *conversationServiceImpl) GetConversationsByStaff(staffID uint) (*responsedto.ConversationListResponse, error) {
-		var conversations []models.ConversationModel
+	var conversations []models.ConversationModel
 	if err := database.DB.Where("organization_staff_id = ?", staffID).
 		Preload("Organization").Preload("Guest").
 		Order("created_at DESC").
@@ -134,7 +136,7 @@ func (t *conversationServiceImpl) GetConversationsByStaff(staffID uint) (*respon
 
 // UpdateConversationStatus implements services.ConversationService.
 func (t *conversationServiceImpl) UpdateConversationStatus(conversationID uint, req requestdto.UpdateConversationRequest) (*responsedto.ConversationResponse, error) {
-		var conversation models.ConversationModel
+	var conversation models.ConversationModel
 	if err := database.DB.First(&conversation, conversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("conversation not found")
@@ -212,8 +214,6 @@ func (t *conversationServiceImpl) buildConversationListResponse(conversations []
 	}
 }
 
-func InstanceConversationService() services.ConversationService {
-	// return  &conversationServiceImpl{}
-
+func NewConversationService() services.ConversationService {
 	return &conversationServiceImpl{}
 }

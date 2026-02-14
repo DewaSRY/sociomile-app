@@ -27,17 +27,13 @@ import (
 // @version         1.0
 // @description     This is a Sociomile application server with authentication.
 // @termsOfService  http://swagger.io/terms/
-
 // @contact.name   API Support
 // @contact.url    http://www.swagger.io/support
 // @contact.email  support@swagger.io
-
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-
 // @host      localhost:8080
 // @BasePath  /api/v1
-
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
@@ -69,22 +65,27 @@ func main() {
 	// setup 
 	config := config.Load()
 	logger.Init()
-	database.Connect()
+	db:=database.Connect()
 
 	// app context 
-	jwtServiceInstance := jwtUtils.InstanceJwtService()
+	jwtServiceInstance := jwtUtils.NewJwtService()
+	authServiceSvc := serviceImpl.NewAuthService(jwtServiceInstance)
 
-	authServiceSvc := serviceImpl.InstanceAuthService(jwtServiceInstance)
-	conversationSvc :=  serviceImpl.InstanceConversationService();
-	conversationMessageSvc :=  serviceImpl.InstanceConversationMessageService();
-	organizationSvc := serviceImpl.InstanceOrganizationService();
-	tickerSvc := serviceImpl.InstanceTicketService()
+	authorizeSvc := serviceImpl.NewAuthorizeService(db);
+	hubSvc := serviceImpl.NewHubServiceImpl(db);
+
+	conversationSvc :=  serviceImpl.NewConversationService();
+	conversationMessageSvc :=  serviceImpl.NewConversationMessageService();
+	organizationSvc := serviceImpl.NewOrganizationService();
+	tickerSvc := serviceImpl.NewTicketService()
 
 
 	authHandler := handlers.NewAuthHandler(authServiceSvc);
 	conversationHandler := handlers.NewConversationHandler(conversationSvc, conversationMessageSvc);
 	organizationHandler := handlers.NewOrganizationHandler(organizationSvc);
 	ticketHandler:= handlers.NewTicketHandler(tickerSvc);
+
+	hubHandler := handlers.NewHubHandler(hubSvc)
 	
 	authRouter:= routers.AuthRouter{
 		JwtService: jwtServiceInstance,
@@ -106,6 +107,12 @@ func main() {
 		TicketHandler: *ticketHandler,
 	}
 
+	hubRouter := routers.HubRouter{
+		JwtService: jwtServiceInstance,
+		AuthorizeService: authorizeSvc,
+		HubHandler: *hubHandler,
+	}
+
 	// server register
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -120,6 +127,8 @@ func main() {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		authRouter.Register(r)
+		hubRouter.Register(r)
+
 		conversationRouter.Register(r)
 		organizationRouter.Register(r)
 		tickerRouter.Register(r)

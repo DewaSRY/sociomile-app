@@ -90,6 +90,6 @@ func (conversationMessageServiceImpl *conversationMessageServiceImpl) mapToMessa
 }
 
 
-func InstanceConversationMessageService() services.ConversationMessageService {
+func NewConversationMessageService() services.ConversationMessageService {
 	return &conversationMessageServiceImpl{}
 }

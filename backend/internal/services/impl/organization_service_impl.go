@@ -15,7 +15,6 @@ import (
 type organizationServiceImpl struct {
 }
 
-
 // CreateOrganization implements services.OrganizationService.
 func (t *organizationServiceImpl) CreateOrganization(req requestdto.CreateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
 	var owner models.UserModel
@@ -50,7 +49,7 @@ func (t *organizationServiceImpl) CreateOrganization(req requestdto.CreateOrgani
 
 // CreateOwnerUser implements services.OrganizationService.
 func (t *organizationServiceImpl) CreateOwnerUser(email string, name string, password string) (*models.UserModel, error) {
-		var existingUser models.UserModel
+	var existingUser models.UserModel
 	if err := database.DB.Where("email = ?", email).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user with this email already exists")
 	}
@@ -76,7 +75,7 @@ func (t *organizationServiceImpl) CreateOwnerUser(email string, name string, pas
 
 // DeleteOrganization implements services.OrganizationService.
 func (t *organizationServiceImpl) DeleteOrganization(id uint) error {
-		var organization models.OrganizationModel
+	var organization models.OrganizationModel
 	if err := database.DB.First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("organization not found")
@@ -93,7 +92,7 @@ func (t *organizationServiceImpl) DeleteOrganization(id uint) error {
 
 // GetAllOrganizations implements services.OrganizationService.
 func (t *organizationServiceImpl) GetAllOrganizations() (*responsedto.OrganizationListResponse, error) {
-		var organizations []models.OrganizationModel
+	var organizations []models.OrganizationModel
 	if err := database.DB.Preload("Owner").Find(&organizations).Error; err != nil {
 		return nil, errors.New("failed to fetch organizations")
 	}
@@ -115,7 +114,7 @@ func (t *organizationServiceImpl) GetAllOrganizations() (*responsedto.Organizati
 
 // GetOrganizationByID implements services.OrganizationService.
 func (t *organizationServiceImpl) GetOrganizationByID(id uint) (*responsedto.OrganizationResponse, error) {
-		var organization models.OrganizationModel
+	var organization models.OrganizationModel
 	if err := database.DB.Preload("Owner").First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("organization not found")
@@ -128,7 +127,7 @@ func (t *organizationServiceImpl) GetOrganizationByID(id uint) (*responsedto.Org
 
 // GetOrganizationStats implements services.OrganizationService.
 func (t *organizationServiceImpl) GetOrganizationStats(organizationID uint) (map[string]interface{}, error) {
-		var totalConversations int64
+	var totalConversations int64
 	var totalTickets int64
 	var pendingConversations int64
 	var pendingTickets int64
@@ -167,7 +166,7 @@ func (t *organizationServiceImpl) GetOrganizationStats(organizationID uint) (map
 
 // UpdateOrganization implements services.OrganizationService.
 func (t *organizationServiceImpl) UpdateOrganization(id uint, req requestdto.UpdateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
-		var organization models.OrganizationModel
+	var organization models.OrganizationModel
 	if err := database.DB.First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("organization not found")
@@ -187,7 +186,6 @@ func (t *organizationServiceImpl) UpdateOrganization(id uint, req requestdto.Upd
 
 	return t.mapToOrganizationResponse(&organization), nil
 }
-
 
 func (t *organizationServiceImpl) mapToOrganizationResponse(org *models.OrganizationModel) *responsedto.OrganizationResponse {
 	response := &responsedto.OrganizationResponse{
@@ -209,6 +207,6 @@ func (t *organizationServiceImpl) mapToOrganizationResponse(org *models.Organiza
 	return response
 }
 
-func InstanceOrganizationService() services.OrganizationService {
+func NewOrganizationService() services.OrganizationService {
 	return &organizationServiceImpl{}
 }
