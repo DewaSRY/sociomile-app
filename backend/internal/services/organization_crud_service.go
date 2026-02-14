@@ -6,7 +6,7 @@ import (
 	"DewaSRY/sociomile-app/pkg/models"
 )
 
-type OrganizationService interface {
+type OrganizationCrudService interface {
 	CreateOrganization(req requestdto.CreateOrganizationRequest) (*responsedto.OrganizationResponse, error)
 	GetOrganizationByID(id uint) (*responsedto.OrganizationResponse, error)
 	GetAllOrganizations() (*responsedto.OrganizationListResponse, error)

@@ -15,11 +15,11 @@ import (
 )
 
 type OrganizationHandler struct {
-	service services.OrganizationService
+	service services.OrganizationCrudService
 }
 
 func NewOrganizationHandler(
-	service services.OrganizationService,
+	service services.OrganizationCrudService,
 ) *OrganizationHandler {
 	return &OrganizationHandler{
 		service: service,

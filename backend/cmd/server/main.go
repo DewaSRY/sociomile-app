@@ -42,10 +42,7 @@ import (
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
-
 	<-ctx.Done()
-
-	logger.InfoLog("shutting down gracefully, press Ctrl+C again to force", map[string]any{})
 	stop()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -55,9 +52,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 			"server": err.Error(),
 		})
 	}
-
 	logger.InfoLog("Server exiting", map[string]any{})
-
 	done <- true
 }
 

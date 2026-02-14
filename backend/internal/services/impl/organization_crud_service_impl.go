@@ -207,6 +207,6 @@ func (t *organizationServiceImpl) mapToOrganizationResponse(org *models.Organiza
 	return response
 }
 
-func NewOrganizationService() services.OrganizationService {
+func NewOrganizationService() services.OrganizationCrudService {
 	return &organizationServiceImpl{}
 }
