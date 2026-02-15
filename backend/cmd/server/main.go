@@ -37,7 +37,7 @@ func main() {
 
 	// app context
 	jwtSvc := jwtUtils.NewJwtService()
-	authServiceSvc := serviceImpl.NewAuthService(jwtSvc)
+	authServiceSvc := serviceImpl.NewAuthService(db,jwtSvc)
 
 	authorizeSvc := serviceImpl.NewAuthorizeService(db)
 	hubSvc := serviceImpl.NewHubServiceImpl(db)
