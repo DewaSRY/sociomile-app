@@ -42,19 +42,18 @@ func main() {
 	authorizeSvc := serviceImpl.NewAuthorizeService(db)
 	hubSvc := serviceImpl.NewHubServiceImpl(db)
 
-	conversationSvc := serviceImpl.NewConversationService()
-	conversationMessageSvc := serviceImpl.NewConversationMessageService()
-	organizationCrudSvc := serviceImpl.NewOrganizationCrudService()
-	tickerSvc := serviceImpl.NewTicketService()
+	organizationConversationSvc := serviceImpl.NewConversationService(db)
+	organizationCrudSvc := serviceImpl.NewOrganizationCrudService(db)
+	tickerSvc := serviceImpl.NewTicketService(db)
 	organizationSvc := serviceImpl.NewOrganizationService(db)
-
+	
 	guestConversationSvc := serviceImpl.NewGuestConversationService(db)
-
+	
 	authHandler := handlers.NewAuthHandler(authServiceSvc)
-	conversationHandler := handlers.NewConversationHandler(conversationSvc, conversationMessageSvc)
 	organizationHandler := handlers.NewOrganizationHandler(organizationCrudSvc)
 	orgStaffHandler := handlers.NewOrganizationStaffHandler(jwtSvc, organizationSvc)
-	ticketHandler := handlers.NewTicketHandler(tickerSvc)
+	organizationTicketHandler := handlers.NewOrganizationTicketHandler(tickerSvc)
+	organizationConversationHandler := handlers.NewOrganizationConversationHandler(jwtSvc, organizationConversationSvc)
 
 	hubHandler := handlers.NewHubHandler(hubSvc)
 	guestConversationHandler := handlers.NewGuestConversationHandler(jwtSvc, guestConversationSvc)
@@ -64,21 +63,13 @@ func main() {
 		AuthHandler: *authHandler,
 	}
 
-	conversationRouter := routers.ConversationRouter{
-		JwtService:          jwtSvc,
-		ConversationHandler: *conversationHandler,
-	}
-
 	organizationRouter := routers.OrganizationRouter{
 		JwtService:          jwtSvc,
 		AuthorizeService:    authorizeSvc,
 		OrganizationHandler: *organizationHandler,
 		OrgStaffHandler:     *orgStaffHandler,
-	}
-
-	tickerRouter := routers.TicketRouter{
-		JwtService:    jwtSvc,
-		TicketHandler: *ticketHandler,
+		OrgTicketHandler: *organizationTicketHandler,
+		OrgConversationHandler: *organizationConversationHandler,
 	}
 
 	hubRouter := routers.HubRouter{
@@ -96,9 +87,7 @@ func main() {
 		Config:             cfg,
 		AuthRouter:         authRouter,
 		HubRouter:          hubRouter,
-		ConversationRouter: conversationRouter,
 		OrganizationRouter: organizationRouter,
-		TicketRouter:       tickerRouter,
 		GuestRouter:        guestRoute,
 	}
 

@@ -12,10 +12,12 @@ import (
 )
 
 type OrganizationRouter struct {
-	JwtService          jwtUtils.JwtService
-	AuthorizeService    services.AuthorizeService
-	OrganizationHandler handlers.OrganizationHandler
-	OrgStaffHandler handlers.OrganizationStaffHandler
+	JwtService             jwtUtils.JwtService
+	AuthorizeService       services.AuthorizeService
+	OrganizationHandler    handlers.OrganizationHandler
+	OrgStaffHandler        handlers.OrganizationStaffHandler
+	OrgTicketHandler       handlers.OrganizationTicketHandler
+	OrgConversationHandler handlers.OrganizationCOnversationHandler
 }
 
 func (t *OrganizationRouter) Register(r chi.Router) {
@@ -42,8 +44,22 @@ func (t *OrganizationRouter) Register(r chi.Router) {
 			)).Get("/", t.OrgStaffHandler.GetStaffListPagination)
 		})
 
-		r.Post("/", t.OrganizationHandler.CreateOrganization)
-		r.Get("/", t.OrganizationHandler.GetAllOrganizations)
+		r.Route("/ticket", func(r chi.Router) {
+			r.Post("/", t.OrgTicketHandler.CreateTicket)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Put("/", t.OrgTicketHandler.UpdateTicket)
+			})
+		})
+
+		r.Route("/conversations", func(r chi.Router) {
+			r.Get("/", t.OrgConversationHandler.GetConversationsList)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", t.OrgConversationHandler.GetConversationByID)
+				r.Put("/assign", t.OrgConversationHandler.AssignConversation)
+				r.Put("/status", t.OrgConversationHandler.UpdateConversationStatus)
+			})
+		})
+
 
 		r.Route("/{id}", func(r chi.Router) {
 			r.Get("/", t.OrganizationHandler.GetOrganization)
@@ -52,4 +68,5 @@ func (t *OrganizationRouter) Register(r chi.Router) {
 			r.Get("/stats", t.OrganizationHandler.GetOrganizationStats)
 		})
 	})
+
 }

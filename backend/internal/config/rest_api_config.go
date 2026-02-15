@@ -20,9 +20,7 @@ type RestAPIConfig struct {
 	Config             *Config
 	AuthRouter         routers.AuthRouter
 	HubRouter          routers.HubRouter
-	ConversationRouter routers.ConversationRouter
 	OrganizationRouter routers.OrganizationRouter
-	TicketRouter       routers.TicketRouter
 	GuestRouter	routers.GuestRouter
 }
 
@@ -59,9 +57,7 @@ func (cfg *RestAPIConfig) Run() {
 	r.Route("/api/v1", func(r chi.Router) {
 		cfg.AuthRouter.Register(r)
 		cfg.HubRouter.Register(r)
-		cfg.ConversationRouter.Register(r)
 		cfg.OrganizationRouter.Register(r)
-		cfg.TicketRouter.Register(r)
 		cfg.GuestRouter.Register(r)
 	})
 
