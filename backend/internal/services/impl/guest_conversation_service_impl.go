@@ -52,7 +52,7 @@ func (t *guestConversationServiceImpl) GetConversation(user *jwt.Claims, filter 
 	}
 
 	if err := t.db.Where("guest_id = ?", user.UserID).
-		Offset(offset).
+		Offset(offset).Limit(*filter.Limit).
 		Preload("Organization").Preload("Guest").
 		Order("created_at DESC").
 		Find(&conversations).Error; err != nil {

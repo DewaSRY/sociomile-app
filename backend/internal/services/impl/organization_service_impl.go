@@ -59,7 +59,7 @@ func (t *organizationServiceImpl) GetStaffList(filter filtersdto.FiltersDto, use
  if err:= t.db.Model(&models.UserModel{}).
 		Where("organization_id = ?", user.OrganizationId).
 		Preload("Role").
-		Offset(offset).Find(&staffList).Error; err!= nil{
+		Offset(offset).Limit(*filter.Limit).Find(&staffList).Error; err!= nil{
 			return  nil, errors.New("failed to populate user")
 		}
 	staffListResponse := make([]responsedto.OrganizationStaffRecord, 0)
