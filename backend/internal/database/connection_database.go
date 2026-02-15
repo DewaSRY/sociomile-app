@@ -13,7 +13,7 @@ import (
 
 var DB *gorm.DB
 
-func Connect() {
+func Connect()  *gorm.DB{
 	_ = godotenv.Load()
 	database_url := os.Getenv("DATABASE_URL")
 
@@ -30,6 +30,7 @@ func Connect() {
 	logger.InfoLog("Database connected", map[string]any{
 		"message": "connection success",
 	})
+	return  db
 }
 
 func Close() {

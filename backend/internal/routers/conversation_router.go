@@ -1,32 +1,28 @@
 package routers
 
-import (
-	"DewaSRY/sociomile-app/internal/handlers"
-	"DewaSRY/sociomile-app/internal/middleware"
+// type ConversationRouter struct {
+// 	JwtService          jwtUtils.JwtService
+// 	ConversationHandler handlers.ConversationHandler
+// }
 
-	"github.com/go-chi/chi/v5"
-)
+// func (t *ConversationRouter) Register(r chi.Router) {
+// 	r.Route("/conversations", func(r chi.Router) {
+// 		r.Use(middleware.JWTAuth(t.JwtService))
 
-func ConversationRouter(r chi.Router) {
-	convHandler := handlers.NewConversationHandler()
+// 		// Guest can create conversation
+// 		r.Post("/", t.ConversationHandler.CreateConversation)
 
-	r.Route("/conversations", func(r chi.Router) {
-		r.Use(middleware.JWTAuth)
+// 		// Get user's own conversations
+// 		r.Get("/my", t.ConversationHandler.GetMyConversations)
 
-		// Guest can create conversation
-		r.Post("/", convHandler.CreateConversation)
+// 		// Message routes
+// 		r.Post("/messages", t.ConversationHandler.CreateMessage)
 
-		// Get user's own conversations
-		r.Get("/my", convHandler.GetMyConversations)
-
-		// Message routes
-		r.Post("/messages", convHandler.CreateMessage)
-
-		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", convHandler.GetConversation)
-			r.Put("/status", convHandler.UpdateConversationStatus)
-			r.Post("/assign", convHandler.AssignConversation)
-			r.Get("/messages", convHandler.GetConversationMessages)
-		})
-	})
-}
+// 		r.Route("/{id}", func(r chi.Router) {
+// 			r.Get("/", t.ConversationHandler.GetConversation)
+// 			r.Put("/status", t.ConversationHandler.UpdateConversationStatus)
+// 			r.Post("/assign", t.ConversationHandler.AssignConversation)
+// 			r.Get("/messages", t.ConversationHandler.GetConversationMessages)
+// 		})
+// 	})
+// }

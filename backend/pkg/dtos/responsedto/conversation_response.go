@@ -19,3 +19,8 @@ type ConversationListResponse struct {
 	Conversations []ConversationResponse `json:"conversations"`
 	Metadata      PaginateMetaData       `json:"metadata"`
 }
+
+type ConversationListPaginateResponse struct {
+	Data     []ConversationResponse `json:"data"`
+	Metadata PaginateMetaData       `json:"metadata"`
+}

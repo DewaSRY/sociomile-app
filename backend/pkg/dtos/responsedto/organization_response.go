@@ -15,3 +15,16 @@ type OrganizationListResponse struct {
 	Organizations []OrganizationResponse `json:"organizations"`
 	Metadata      PaginateMetaData       `json:"metadata"`
 }
+
+// New
+type OrganizationStaffRecord struct {
+	ID    uint   `json:"id"`
+	Name  string `json:"name"`
+	RoleName  string `json:"roleName"`
+	Email string `json:"email"`
+}
+
+type OrganizationStaffPagination struct {
+	Data     []OrganizationStaffRecord `json:"data"`
+	Metadata PaginateMetaData       `json:"metadata"`
+}

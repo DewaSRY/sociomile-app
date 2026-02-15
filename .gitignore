@@ -37,3 +37,6 @@ Makefile
 
 temp/*
 cache/*
+
+.nuxt
+node_modules

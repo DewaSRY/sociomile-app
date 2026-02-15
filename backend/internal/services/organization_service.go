@@ -1,17 +1,14 @@
 package services
 
 import (
+	"DewaSRY/sociomile-app/pkg/dtos/filtersdto"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
-	"DewaSRY/sociomile-app/pkg/models"
+	jwtLib "DewaSRY/sociomile-app/pkg/lib/jwt"
 )
 
-type OrganizationService interface {
-	CreateOrganization(req requestdto.CreateOrganizationRequest) (*responsedto.OrganizationResponse, error)
-	GetOrganizationByID(id uint) (*responsedto.OrganizationResponse, error)
-	GetAllOrganizations() (*responsedto.OrganizationListResponse, error)
-	UpdateOrganization(id uint, req requestdto.UpdateOrganizationRequest) (*responsedto.OrganizationResponse, error)
-	DeleteOrganization(id uint) error
-	GetOrganizationStats(organizationID uint) (map[string]interface{}, error)
-	CreateOwnerUser(email, name, password string) (*models.UserModel, error)
+
+type OrganizationService interface{
+	CreateStaff(requestdto.RegisterRequest, *jwtLib.Claims) error
+	GetStaffList(filtersdto.FiltersDto, *jwtLib.Claims) (*responsedto.OrganizationStaffPagination, error)
 }

@@ -11,9 +11,7 @@ import (
 
 func main() {
 	config.Load()
-	
 	logger.Init()
-
 	database.Connect()
 
 	logger.InfoLog("start initial seeder", map[string]any{} )

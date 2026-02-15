@@ -25,7 +25,7 @@ func Init() {
 
 	logger, err := config.Build(
 		zap.AddCaller(),
-		zap.AddCallerSkip(2),
+		zap.AddCallerSkip(1),
 	)
 	
 	if err != nil {
