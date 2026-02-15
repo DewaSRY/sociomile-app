@@ -1,0 +1,33 @@
+all: build
+
+build:
+	go build -o bin/$(APP_NAME) ./cmd
+
+dev:
+	@echo "Starting development server..."
+	go run ./cmd/server
+
+seeder:
+	@echo "Starting seeder..."
+	go run ./cmd/seeders
+
+test:
+	go test ./...
+
+clean:
+	rm -rf bin
+
+gen-doc:
+	@echo "Generating swagger docs..."
+	@swag init -g ./cmd/server/main.go -o docs --parseDependency --parseInternal
+
+# Help
+run-dev:
+	@make gen-doc
+	@make dev
+
+# ===============================
+# DECLARE PHONY
+# ===============================
+.PHONY: all build run seeder test clean \
+        migration-create migration-up migration-down migration-status gen-doc run-with-docs
