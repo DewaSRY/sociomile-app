@@ -15,14 +15,7 @@ import (
 // @title           Sociomile API
 // @version         1.0
 // @description     This is a Sociomile application server with authentication.
-// @termsOfService  http://swagger.io/terms/
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-// @host      localhost:8080
-// @BasePath  /api/v1
+// @BasePath        /api/v1
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
@@ -48,15 +41,17 @@ func main() {
 	organizationSvc := serviceImpl.NewOrganizationService(db)
 	
 	guestConversationSvc := serviceImpl.NewGuestConversationService(db)
+	guestMessageSvc := serviceImpl.NewGuestMessageService(db)
 	
 	authHandler := handlers.NewAuthHandler(authServiceSvc)
 	organizationHandler := handlers.NewOrganizationHandler(organizationCrudSvc)
 	orgStaffHandler := handlers.NewOrganizationStaffHandler(jwtSvc, organizationSvc)
 	organizationTicketHandler := handlers.NewOrganizationTicketHandler(tickerSvc)
-	organizationConversationHandler := handlers.NewOrganizationConversationHandler(jwtSvc, organizationConversationSvc)
+	OrganizationConversationHandler := handlers.NewOrganizationConversationHandler(jwtSvc, organizationConversationSvc)
 
 	hubHandler := handlers.NewHubHandler(hubSvc)
 	guestConversationHandler := handlers.NewGuestConversationHandler(jwtSvc, guestConversationSvc)
+	guestMessageHandler := handlers.NewGuestMessageHandler(jwtSvc, guestMessageSvc)
 
 	authRouter := routers.AuthRouter{
 		JwtService:  jwtSvc,
@@ -69,7 +64,7 @@ func main() {
 		OrganizationHandler: *organizationHandler,
 		OrgStaffHandler:     *orgStaffHandler,
 		OrgTicketHandler: *organizationTicketHandler,
-		OrgConversationHandler: *organizationConversationHandler,
+		OrgConversationHandler: *OrganizationConversationHandler,
 	}
 
 	hubRouter := routers.HubRouter{
@@ -81,6 +76,7 @@ func main() {
 	guestRoute := routers.GuestRouter{
 		JwtService:               jwtSvc,
 		GuestConversationHandler: *guestConversationHandler,
+		GuestMessageHandler:      *guestMessageHandler,
 	}
 
 	restAPIConfig := &config.RestAPIConfig{

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"DewaSRY/sociomile-app/internal/services"
+	_ "DewaSRY/sociomile-app/pkg/dtos/filtersdto"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
 	jwtLib "DewaSRY/sociomile-app/pkg/lib/jwt"
@@ -31,7 +32,7 @@ func NewOrganizationTicketHandler(
 // CreateTicket godoc
 // @Summary      Create a new ticket
 // @Description  Create a new ticket from a conversation
-// @Tags         tickets
+// @Tags         organization-tickets
 // @Accept       json
 // @Produce      json
 // @Param        request body requestdto.CreateTicketRequest true "Create Ticket Request"
@@ -39,7 +40,7 @@ func NewOrganizationTicketHandler(
 // @Failure      400  {object}  responsedto.ErrorResponse
 // @Failure      500  {object}  responsedto.ErrorResponse
 // @Security     BearerAuth
-// @Router       /tickets [post]
+// @Router       /organizations/ticket [post]
 func (t *OrganizationTicketHandler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 
 	var req requestdto.CreateTicketRequest
@@ -85,10 +86,43 @@ func (t *OrganizationTicketHandler) CreateTicket(w http.ResponseWriter, r *http.
 	utils.WriteJSONResponse(w, http.StatusCreated, result)
 }
 
+// GetTicketsList godoc
+// @Summary      Get tickets list with pagination
+// @Description  Retrieve list of tickets for organization with pagination support
+// @Tags         organization-tickets
+// @Accept       json
+// @Produce      json
+// @Param        request  query  filtersdto.FiltersDto  false  "Pagination query"
+// @Success      200      {object}  responsedto.TicketListResponse
+// @Failure      500      {object}  responsedto.ErrorResponse
+// @Security     BearerAuth
+// @Router       /organizations/ticket [get]
+func (t *OrganizationTicketHandler) GetTicketsList(w http.ResponseWriter, r *http.Request) {
+	filter := utils.ParsePagination(r)
+	user, _ := t.jwtService.GetUserFromContext(r.Context())
+
+	result, err := t.service.GetTicketsList(user, filter)
+	if err != nil {
+		errorData := responsedto.ErrorResponse{
+			Message: "failed to fetch tickets",
+			Error:   err.Error(),
+			Code:    http.StatusInternalServerError,
+		}
+		logger.ErrorLog("Failed to fetch tickets", errorData)
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, errorData)
+		return
+	}
+
+	logger.InfoLog("Tickets fetched successfully", map[string]any{
+		"count": len(result.Tickets),
+	})
+	utils.WriteJSONResponse(w, http.StatusOK, result)
+}
+
 // UpdateTicket godoc
 // @Summary      Update ticket
 // @Description  Update a ticket's details
-// @Tags         tickets
+// @Tags         organization-tickets
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Ticket ID"
@@ -97,7 +131,7 @@ func (t *OrganizationTicketHandler) CreateTicket(w http.ResponseWriter, r *http.
 // @Failure      400  {object}  responsedto.ErrorResponse
 // @Failure      404  {object}  responsedto.ErrorResponse
 // @Security     BearerAuth
-// @Router       /tickets/{id} [put]
+// @Router       /organizations/ticket/{id} [put]
 func (t *OrganizationTicketHandler) UpdateTicket(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)

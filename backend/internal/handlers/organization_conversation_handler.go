@@ -1,21 +1,21 @@
 package handlers
 
 import (
-	"encoding/json"
-	"net/http"
-	"strconv"
-
 	"DewaSRY/sociomile-app/internal/services"
+	_ "DewaSRY/sociomile-app/pkg/dtos/filtersdto"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
 	jwtLib "DewaSRY/sociomile-app/pkg/lib/jwt"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 	"DewaSRY/sociomile-app/pkg/utils"
+	"encoding/json"
+	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
 
-type OrganizationCOnversationHandler struct {
+type OrganizationConversationHandler struct {
 	jwtService jwtLib.JwtService
 	service    services.OrganizationConversationService
 }
@@ -23,8 +23,8 @@ type OrganizationCOnversationHandler struct {
 func NewOrganizationConversationHandler(
 	jwtService jwtLib.JwtService,
 	service services.OrganizationConversationService,
-) *OrganizationCOnversationHandler {
-	return &OrganizationCOnversationHandler{
+) *OrganizationConversationHandler {
+	return &OrganizationConversationHandler{
 		jwtService: jwtService,
 		service:    service,
 	}
@@ -33,15 +33,15 @@ func NewOrganizationConversationHandler(
 // GetConversationsList godoc
 // @Summary      Get conversations list with pagination
 // @Description  Retrieve list of conversations for organization with pagination support
-// @Tags         conversations
+// @Tags         organization-conversations
 // @Accept       json
 // @Produce      json
 // @Param        request  query  filtersdto.FiltersDto  false  "Pagination query"
 // @Success      200      {object}  responsedto.ConversationListResponse
 // @Failure      500      {object}  responsedto.ErrorResponse
 // @Security     BearerAuth
-// @Router       /conversations [get]
-func (h *OrganizationCOnversationHandler) GetConversationsList(w http.ResponseWriter, r *http.Request) {
+// @Router       /organizations/conversations [get]
+func (h *OrganizationConversationHandler) GetConversationsList(w http.ResponseWriter, r *http.Request) {
 	filter := utils.ParsePagination(r)
 	user, _ := h.jwtService.GetUserFromContext(r.Context())
 
@@ -66,7 +66,7 @@ func (h *OrganizationCOnversationHandler) GetConversationsList(w http.ResponseWr
 // GetConversationByID godoc
 // @Summary      Get conversation by ID
 // @Description  Retrieve a conversation by its ID
-// @Tags         conversations
+// @Tags         organization-conversations
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Conversation ID"
@@ -74,8 +74,8 @@ func (h *OrganizationCOnversationHandler) GetConversationsList(w http.ResponseWr
 // @Failure      400  {object}  responsedto.ErrorResponse
 // @Failure      404  {object}  responsedto.ErrorResponse
 // @Security     BearerAuth
-// @Router       /conversations/{id} [get]
-func (h *OrganizationCOnversationHandler) GetConversationByID(w http.ResponseWriter, r *http.Request) {
+// @Router       /organizations/conversations/{id} [get]
+func (h *OrganizationConversationHandler) GetConversationByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -110,7 +110,7 @@ func (h *OrganizationCOnversationHandler) GetConversationByID(w http.ResponseWri
 // AssignConversation godoc
 // @Summary      Assign conversation to staff
 // @Description  Assign a conversation to an organization staff member
-// @Tags         conversations
+// @Tags         organization-conversations
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Conversation ID"
@@ -120,8 +120,8 @@ func (h *OrganizationCOnversationHandler) GetConversationByID(w http.ResponseWri
 // @Failure      404  {object}  responsedto.ErrorResponse
 // @Failure      500  {object}  responsedto.ErrorResponse
 // @Security     BearerAuth
-// @Router       /conversations/{id}/assign [put]
-func (h *OrganizationCOnversationHandler) AssignConversation(w http.ResponseWriter, r *http.Request) {
+// @Router       /organizations/conversations/{id}/assign [put]
+func (h *OrganizationConversationHandler) AssignConversation(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -171,7 +171,7 @@ func (h *OrganizationCOnversationHandler) AssignConversation(w http.ResponseWrit
 	}
 
 	logger.InfoLog("Conversation assigned successfully", map[string]any{
-		"conversation_id":        result.ID,
+		"conversation_id":       result.ID,
 		"organization_staff_id": result.OrganizationStaffID,
 	})
 	utils.WriteJSONResponse(w, http.StatusOK, result)
@@ -180,7 +180,7 @@ func (h *OrganizationCOnversationHandler) AssignConversation(w http.ResponseWrit
 // UpdateConversationStatus godoc
 // @Summary      Update conversation status
 // @Description  Update the status of a conversation
-// @Tags         conversations
+// @Tags         organization-conversations
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Conversation ID"
@@ -190,8 +190,8 @@ func (h *OrganizationCOnversationHandler) AssignConversation(w http.ResponseWrit
 // @Failure      404  {object}  responsedto.ErrorResponse
 // @Failure      500  {object}  responsedto.ErrorResponse
 // @Security     BearerAuth
-// @Router       /conversations/{id}/status [put]
-func (h *OrganizationCOnversationHandler) UpdateConversationStatus(w http.ResponseWriter, r *http.Request) {
+// @Router       /organizations/conversations/{id}/status [put]
+func (h *OrganizationConversationHandler) UpdateConversationStatus(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {

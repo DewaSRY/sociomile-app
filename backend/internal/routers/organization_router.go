@@ -17,7 +17,7 @@ type OrganizationRouter struct {
 	OrganizationHandler    handlers.OrganizationHandler
 	OrgStaffHandler        handlers.OrganizationStaffHandler
 	OrgTicketHandler       handlers.OrganizationTicketHandler
-	OrgConversationHandler handlers.OrganizationCOnversationHandler
+	OrgConversationHandler handlers.OrganizationConversationHandler
 }
 
 func (t *OrganizationRouter) Register(r chi.Router) {
@@ -45,6 +45,7 @@ func (t *OrganizationRouter) Register(r chi.Router) {
 		})
 
 		r.Route("/ticket", func(r chi.Router) {
+			r.Get("/", t.OrgTicketHandler.GetTicketsList)
 			r.Post("/", t.OrgTicketHandler.CreateTicket)
 			r.Route("/{id}", func(r chi.Router) {
 				r.Put("/", t.OrgTicketHandler.UpdateTicket)

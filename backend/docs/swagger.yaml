@@ -169,9 +169,9 @@ definitions:
       metadata:
         $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.PaginateMetaData'
     type: object
-  DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageListResponse:
+  DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessagePaginateResponse:
     properties:
-      messages:
+      data:
         items:
           $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageResponse'
         type: array
@@ -336,17 +336,9 @@ definitions:
       name:
         type: string
     type: object
-host: localhost:8080
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
+  contact: {}
   description: This is a Sociomile application server with authentication.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
   title: Sociomile API
   version: "1.0"
 paths:
@@ -459,264 +451,11 @@ paths:
       summary: Register a new user
       tags:
       - auth
-  /conversations:
-    post:
-      consumes:
-      - application/json
-      description: Create a new conversation with an organization (Guest user)
-      parameters:
-      - description: Create Conversation Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateConversationRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create a new conversation
-      tags:
-      - conversations
-  /conversations/{conversation_id}/tickets:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve all tickets for a conversation
-      parameters:
-      - description: Conversation ID
-        in: path
-        name: conversation_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketListResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get conversation tickets
-      tags:
-      - tickets
-  /conversations/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a conversation by its ID
-      parameters:
-      - description: Conversation ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get conversation by ID
-      tags:
-      - conversations
-  /conversations/{id}/assign:
-    post:
-      consumes:
-      - application/json
-      description: Assign a conversation to a staff member (Organization Owner only)
-      parameters:
-      - description: Conversation ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Assign Conversation Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.AssignConversationRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Assign conversation to staff
-      tags:
-      - conversations
-  /conversations/{id}/messages:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve all messages for a conversation
-      parameters:
-      - description: Conversation ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageListResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get conversation messages
-      tags:
-      - conversations
-  /conversations/{id}/status:
-    put:
-      consumes:
-      - application/json
-      description: Update the status of a conversation
-      parameters:
-      - description: Conversation ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update Conversation Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateConversationRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Update conversation status
-      tags:
-      - conversations
-  /conversations/messages:
-    post:
-      consumes:
-      - application/json
-      description: Create a new message in a conversation
-      parameters:
-      - description: Create Message Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateConversationMessageRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create a message in a conversation
-      tags:
-      - conversations
-  /conversations/my:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve all conversations for the authenticated user (guest or
-        staff)
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationListResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get my conversations
-      tags:
-      - conversations
   /guest/conversations:
     get:
       consumes:
       - application/json
-      description: Retrieve a guest conversation by its ID
+      description: Retrieve a guest conversation
       parameters:
       - in: query
         minimum: 1
@@ -743,7 +482,7 @@ paths:
             $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get guest conversation by ID
+      summary: Get guest conversation
       tags:
       - guest-conversation
     post:
@@ -777,6 +516,77 @@ paths:
       summary: Create a new conversation
       tags:
       - guest-conversation
+  /guest/conversations/{id}/messages:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve messages for a specific conversation
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: query
+        minimum: 1
+        name: limit
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessagePaginateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get conversation messages
+      tags:
+      - guest-messages
+  /guest/conversations/messages:
+    post:
+      consumes:
+      - application/json
+      description: Guest user sends a message in their conversation
+      parameters:
+      - description: Send Message Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.CreateConversationMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Send a message in a conversation
+      tags:
+      - guest-messages
   /hub/organizations:
     get:
       consumes:
@@ -1021,16 +831,20 @@ paths:
       summary: Get organization statistics
       tags:
       - organizations
-  /organizations/{organization_id}/conversations:
+  /organizations/conversations:
     get:
       consumes:
       - application/json
-      description: Retrieve all conversations for an organization (Owner/Staff only)
+      description: Retrieve list of conversations for organization with pagination
+        support
       parameters:
-      - description: Organization ID
-        in: path
-        name: organization_id
-        required: true
+      - in: query
+        minimum: 1
+        name: limit
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
         type: integer
       produces:
       - application/json
@@ -1039,28 +853,24 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationListResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get organization conversations
+      summary: Get conversations list with pagination
       tags:
-      - conversations
-  /organizations/{organization_id}/tickets:
+      - organization-conversations
+  /organizations/conversations/{id}:
     get:
       consumes:
       - application/json
-      description: Retrieve all tickets for an organization (Owner/Staff only)
+      description: Retrieve a conversation by its ID
       parameters:
-      - description: Organization ID
+      - description: Conversation ID
         in: path
-        name: organization_id
+        name: id
         required: true
         type: integer
       produces:
@@ -1069,9 +879,50 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketListResponse'
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get conversation by ID
+      tags:
+      - organization-conversations
+  /organizations/conversations/{id}/assign:
+    put:
+      consumes:
+      - application/json
+      description: Assign a conversation to an organization staff member
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Assign Conversation Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.AssignConversationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
         "500":
@@ -1080,9 +931,50 @@ paths:
             $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get organization tickets
+      summary: Assign conversation to staff
       tags:
-      - tickets
+      - organization-conversations
+  /organizations/conversations/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update the status of a conversation
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Conversation Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.UpdateConversationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update conversation status
+      tags:
+      - organization-conversations
   /organizations/staff:
     get:
       consumes:
@@ -1144,7 +1036,36 @@ paths:
       summary: Create a new organization staff
       tags:
       - organizations-staff
-  /tickets:
+  /organizations/ticket:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve list of tickets for organization with pagination support
+      parameters:
+      - in: query
+        minimum: 1
+        name: limit
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get tickets list with pagination
+      tags:
+      - organization-tickets
     post:
       consumes:
       - application/json
@@ -1175,68 +1096,8 @@ paths:
       - BearerAuth: []
       summary: Create a new ticket
       tags:
-      - tickets
-  /tickets/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a ticket
-      parameters:
-      - description: Ticket ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Delete ticket
-      tags:
-      - tickets
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a ticket by its ID
-      parameters:
-      - description: Ticket ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get ticket by ID
-      tags:
-      - tickets
+      - organization-tickets
+  /organizations/ticket/{id}:
     put:
       consumes:
       - application/json
@@ -1272,34 +1133,7 @@ paths:
       - BearerAuth: []
       summary: Update ticket
       tags:
-      - tickets
-  /tickets/number/{number}:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a ticket by its ticket number
-      parameters:
-      - description: Ticket Number
-        in: path
-        name: number
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get ticket by number
-      tags:
-      - tickets
+      - organization-tickets
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

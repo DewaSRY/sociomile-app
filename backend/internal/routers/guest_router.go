@@ -11,6 +11,7 @@ import (
 type GuestRouter struct {
 	JwtService               jwtUtils.JwtService
 	GuestConversationHandler handlers.GuestConversationHandler
+	GuestMessageHandler      handlers.GuestMessageHandler
 }
 
 func (t *GuestRouter) Register(r chi.Router) {
@@ -20,6 +21,11 @@ func (t *GuestRouter) Register(r chi.Router) {
 		r.Route("/conversations", func(r chi.Router) {
 			r.Get("/", t.GuestConversationHandler.GetConversation)
 			r.Post("/", t.GuestConversationHandler.CreateConversation)
+
+			r.Post("/messages", t.GuestMessageHandler.SendConversationMessage)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/messages", t.GuestMessageHandler.GetConversationMessageList)
+			})
 		})
 
 	})
