@@ -29,6 +29,7 @@ func (t *guestMessageServiceImpl) GetConversationMessageList(user *jwt.Claims, f
 	if err := t.db.
 		Where("conversation_id = ?", conversationId).
 		Offset(offset).
+		Limit(*filter.Limit).
 		Preload("CreatedBy").
 		Order("created_at ASC").
 		Find(&messages).Error; err != nil {
