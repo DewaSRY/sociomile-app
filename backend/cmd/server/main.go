@@ -48,13 +48,16 @@ func main() {
 	tickerSvc := serviceImpl.NewTicketService()
 	organizationSvc := serviceImpl.NewOrganizationService(db)
 
+	guestConversationSvc := serviceImpl.NewGuestConversationService(db)
+
 	authHandler := handlers.NewAuthHandler(authServiceSvc)
 	conversationHandler := handlers.NewConversationHandler(conversationSvc, conversationMessageSvc)
-	organizationHandler := handlers.NewOrganizationHandler( organizationCrudSvc)
-	orgStaffHandler := handlers.NewOrganizationStaffHandler( jwtSvc, organizationSvc)
+	organizationHandler := handlers.NewOrganizationHandler(organizationCrudSvc)
+	orgStaffHandler := handlers.NewOrganizationStaffHandler(jwtSvc, organizationSvc)
 	ticketHandler := handlers.NewTicketHandler(tickerSvc)
 
 	hubHandler := handlers.NewHubHandler(hubSvc)
+	guestConversationHandler := handlers.NewGuestConversationHandler(jwtSvc, guestConversationSvc)
 
 	authRouter := routers.AuthRouter{
 		JwtService:  jwtSvc,
@@ -68,9 +71,9 @@ func main() {
 
 	organizationRouter := routers.OrganizationRouter{
 		JwtService:          jwtSvc,
-		AuthorizeService: authorizeSvc,
+		AuthorizeService:    authorizeSvc,
 		OrganizationHandler: *organizationHandler,
-		OrgStaffHandler: *orgStaffHandler,
+		OrgStaffHandler:     *orgStaffHandler,
 	}
 
 	tickerRouter := routers.TicketRouter{
@@ -84,6 +87,11 @@ func main() {
 		HubHandler:       *hubHandler,
 	}
 
+	guestRoute := routers.GuestRouter{
+		JwtService:               jwtSvc,
+		GuestConversationHandler: *guestConversationHandler,
+	}
+
 	restAPIConfig := &config.RestAPIConfig{
 		Config:             cfg,
 		AuthRouter:         authRouter,
@@ -91,6 +99,7 @@ func main() {
 		ConversationRouter: conversationRouter,
 		OrganizationRouter: organizationRouter,
 		TicketRouter:       tickerRouter,
+		GuestRouter:        guestRoute,
 	}
 
 	restAPIConfig.Run()
