@@ -1,5 +1,5 @@
 <template>
-  <UHeader>
+  <UHeader :toggle="false">
     <template #left>
       <NuxtLink to="/">
         <div class="grid grid-cols-4 gap-2">

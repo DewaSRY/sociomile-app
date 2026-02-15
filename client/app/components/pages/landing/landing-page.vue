@@ -6,13 +6,13 @@
       :links="[
         {
           label: 'Get started',
-          to: '/auth/register',
+          to: '/auth/signin',
           trailingIcon: 'i-lucide-arrow-right',
           size: 'xl',
         },
         {
           label: 'Sign in',
-          to: '/auth/login',
+          to: '/auth/signup',
           icon: 'i-lucide-log-in',
           size: 'xl',
           color: 'neutral',
