@@ -5,10 +5,10 @@ import "time"
 type OrganizationResponse struct {
 	ID        uint      `json:"id"`
 	Name      string    `json:"name"`
-	OwnerID   uint      `json:"owner_id"`
+	OwnerID   uint      `json:"ownerId"`
 	Owner     *UserData `json:"owner,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type OrganizationListResponse struct {

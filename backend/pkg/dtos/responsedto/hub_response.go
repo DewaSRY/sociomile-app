@@ -6,8 +6,8 @@ type OrganizationRecord struct {
 	ID        uint      `json:"id"`
 	Name      string    `json:"name"`
 	Owner     *UserData `json:"owner,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type OrganizationPaginateResponse struct {

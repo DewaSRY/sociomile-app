@@ -1,3 +1,3 @@
 <template>
-    <h1>chat room page</h1>
+    <h1>guest page</h1>
 </template>
