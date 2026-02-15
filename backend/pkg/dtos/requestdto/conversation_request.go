@@ -1,7 +1,7 @@
 package requestdto
 
 type CreateConversationRequest struct {
-	OrganizationID uint `json:"organization_id" validate:"required"`
+	OrganizationID uint `json:"organizationId" validate:"required"`
 }
 
 type UpdateConversationRequest struct {
@@ -9,5 +9,5 @@ type UpdateConversationRequest struct {
 }
 
 type AssignConversationRequest struct {
-	OrganizationStaffID uint `json:"organization_staff_id" validate:"required"`
+	OrganizationStaffID uint `json:"organizationStaffId" validate:"required"`
 }

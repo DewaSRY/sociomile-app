@@ -1,7 +1,7 @@
 package requestdto
 
 type CreateTicketRequest struct {
-	ConversationID uint   `json:"conversation_id" validate:"required"`
+	ConversationID uint   `json:"conversationId" validate:"required"`
 	Name           string `json:"name" validate:"required,min=3,max=200"`
 }
 

@@ -6,7 +6,6 @@
 import HubDashboardPage from "~/components/pages/hub/hub-dashboard-page.vue";
 
 definePageMeta({
-  middleware: 'super-admin',
   layout: 'portal',
 });
 </script>

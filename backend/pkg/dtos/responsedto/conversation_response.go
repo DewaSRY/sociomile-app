@@ -4,15 +4,15 @@ import "time"
 
 type ConversationResponse struct {
 	ID                  uint                  `json:"id"`
-	OrganizationID      uint                  `json:"organization_id"`
+	OrganizationID      uint                  `json:"organizationId"`
 	Organization        *OrganizationResponse `json:"organization,omitempty"`
-	GuestID             uint                  `json:"guest_id"`
+	GuestID             uint                  `json:"guestId"`
 	Guest               *UserData             `json:"guest,omitempty"`
-	OrganizationStaffID *uint                 `json:"organization_staff_id,omitempty"`
-	OrganizationStaff   *UserData             `json:"organization_staff,omitempty"`
+	OrganizationStaffID *uint                 `json:"organizationStaffId,omitempty"`
+	OrganizationStaff   *UserData             `json:"organizationStaff,omitempty"`
 	Status              string                `json:"status"`
-	CreatedAt           time.Time             `json:"created_at"`
-	UpdatedAt           time.Time             `json:"updated_at"`
+	CreatedAt           time.Time             `json:"createdAt"`
+	UpdatedAt           time.Time             `json:"updatedAt"`
 }
 
 type ConversationListResponse struct {

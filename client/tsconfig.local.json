@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "types": ["@nuxtjs/i18n"],
+    "baseUrl": ".",
+    "paths": {
+      "$components/*": ["app/components/*"],
+      "$shared/*": ["shared/*"],
+      "$utils/*": ["utils/*"],
+      "$libs/*": ["libs/*"],
+      "$assets/*": ["assets/*"],
+      "$constants/*": ["constants/*"]
+    }
+  }
+}
