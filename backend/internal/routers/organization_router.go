@@ -60,14 +60,6 @@ func (t *OrganizationRouter) Register(r chi.Router) {
 				r.Put("/status", t.OrgConversationHandler.UpdateConversationStatus)
 			})
 		})
-
-
-		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", t.OrganizationHandler.GetOrganization)
-			r.Put("/", t.OrganizationHandler.UpdateOrganization)
-			r.Delete("/", t.OrganizationHandler.DeleteOrganization)
-			r.Get("/stats", t.OrganizationHandler.GetOrganizationStats)
-		})
 	})
 
 }
