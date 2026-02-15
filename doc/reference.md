@@ -1,0 +1,2 @@
+- client https://github.com/nuxt-ui-templates/dashboard
+- https://github.dev/nuxt-ui-templates/starter

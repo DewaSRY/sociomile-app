@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     "@artmizu/nuxt-prometheus",
     "@formkit/nuxt",
   ],
+  css: ["~/assets/css/main.css"],
 
   runtimeConfig: {
     public: {
