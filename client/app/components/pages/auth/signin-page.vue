@@ -23,7 +23,6 @@
 
       <UAlert
         v-if="error"
-        color="red"
         variant="soft"
         :title="error"
         class="mb-4"
