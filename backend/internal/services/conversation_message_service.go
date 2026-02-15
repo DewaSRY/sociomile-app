@@ -8,6 +8,6 @@ import (
 
 type ConversationMessageService interface{
 	CreateMessage(userID uint, req requestdto.CreateConversationMessageRequest) (*responsedto.ConversationMessageResponse, error) 
-	 GetMessagesByConversation(conversationID uint) (*responsedto.ConversationMessageListResponse, error) 
+	GetMessagesByConversation(conversationID uint) (*responsedto.ConversationMessageListResponse, error) 
 }
 
