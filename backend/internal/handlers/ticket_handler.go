@@ -15,11 +15,11 @@ import (
 )
 
 type TicketHandler struct {
-	service services.TicketService
+	service services.OrganizationTicketService
 }
 
 func NewTicketHandler(
-	service services.TicketService,
+	service services.OrganizationTicketService,
 ) *TicketHandler {
 	return &TicketHandler{
 		service: service,

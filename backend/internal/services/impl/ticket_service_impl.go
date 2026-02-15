@@ -1,10 +1,11 @@
 package impl
 
 import (
-	"DewaSRY/sociomile-app/internal/database"
 	"DewaSRY/sociomile-app/internal/services"
+	"DewaSRY/sociomile-app/pkg/dtos/filtersdto"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
+	jwtLib "DewaSRY/sociomile-app/pkg/lib/jwt"
 	"DewaSRY/sociomile-app/pkg/models"
 	"errors"
 	"fmt"
@@ -13,17 +14,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type ticketServiceImpl struct {
+type OrganizationTicketServiceImpl struct {
+	db *gorm.DB
 }
 
 // CreateTicket implements services.TicketService.
-func (t *ticketServiceImpl) CreateTicket(userID uint, req requestdto.CreateTicketRequest) (*responsedto.TicketResponse, error) {
+func (t *OrganizationTicketServiceImpl) CreateTicket(user *jwtLib.Claims, req requestdto.CreateTicketRequest) error {
 	var conversation models.ConversationModel
-	if err := database.DB.First(&conversation, req.ConversationID).Error; err != nil {
+	if err := t.db.First(&conversation, req.ConversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("conversation not found")
+			return errors.New("conversation not found")
 		}
-		return nil, errors.New("failed to fetch conversation")
+		return errors.New("failed to fetch conversation")
 	}
 
 	ticketNumber := t.generateTicketNumber(conversation.OrganizationID)
@@ -31,85 +33,22 @@ func (t *ticketServiceImpl) CreateTicket(userID uint, req requestdto.CreateTicke
 	ticket := models.TicketModel{
 		OrganizationID: conversation.OrganizationID,
 		ConversationID: req.ConversationID,
-		CreatedByID:    userID,
+		CreatedByID:    user.UserID,
 		TicketNumber:   ticketNumber,
 		Name:           req.Name,
 		Status:         models.TicketStatusPending,
 	}
 
-	if err := database.DB.Create(&ticket).Error; err != nil {
-		return nil, errors.New("failed to create ticket")
+	if err := t.db.Create(&ticket).Error; err != nil {
+		return errors.New("failed to create ticket")
 	}
-
-	if err := database.DB.Preload("Organization").Preload("Conversation").Preload("CreatedBy").First(&ticket, ticket.ID).Error; err != nil {
-		return nil, errors.New("failed to load ticket details")
-	}
-
-	return t.mapToTicketResponse(&ticket), nil
-}
-
-// DeleteTicket implements services.TicketService.
-func (t *ticketServiceImpl) DeleteTicket(id uint) error {
-		var ticket models.TicketModel
-	if err := database.DB.First(&ticket, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("ticket not found")
-		}
-		return errors.New("failed to fetch ticket")
-	}
-
-	if err := database.DB.Delete(&ticket).Error; err != nil {
-		return errors.New("failed to delete ticket")
-	}
-
 	return nil
 }
 
-// GetTicketByID implements services.TicketService.
-func (t *ticketServiceImpl) GetTicketByID(id uint) (*responsedto.TicketResponse, error) {
-	var ticket models.TicketModel
-	if err := database.DB.Preload("Organization").Preload("Conversation").Preload("CreatedBy").First(&ticket, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("ticket not found")
-		}
-		return nil, errors.New("failed to fetch ticket")
-	}
-
-	return t.mapToTicketResponse(&ticket), nil
-}
-
-// GetTicketByNumber implements services.TicketService.
-func (t *ticketServiceImpl) GetTicketByNumber(ticketNumber string) (*responsedto.TicketResponse, error) {
-		var ticket models.TicketModel
-	if err := database.DB.Where("ticket_number = ?", ticketNumber).
-		Preload("Organization").Preload("Conversation").Preload("CreatedBy").
-		First(&ticket).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("ticket not found")
-		}
-		return nil, errors.New("failed to fetch ticket")
-	}
-
-	return t.mapToTicketResponse(&ticket), nil
-}
-
-// GetTicketsByConversation implements services.TicketService.
-func (t *ticketServiceImpl) GetTicketsByConversation(conversationID uint) (*responsedto.TicketListResponse, error) {
-		var tickets []models.TicketModel
-	if err := database.DB.Where("conversation_id = ?", conversationID).
-		Preload("Organization").Preload("CreatedBy").
-		Order("created_at DESC").
-		Find(&tickets).Error; err != nil {
-		return nil, errors.New("failed to fetch tickets")
-	}
-
-	return t.buildTicketListResponse(tickets), nil
-}
-
-// GetTicketsByOrganization implements services.TicketService.
-func (t *ticketServiceImpl) GetTicketsByOrganization(organizationID uint) (*responsedto.TicketListResponse, error) {
-		var tickets []models.TicketModel
-	if err := database.DB.Where("organization_id = ?", organizationID).
+// GetTicketsList implements services.TicketService.
+func (t *OrganizationTicketServiceImpl) GetTicketsList(user *jwtLib.Claims, filter filtersdto.FiltersDto) (*responsedto.TicketListResponse, error) {
+	var tickets []models.TicketModel
+	if err := t.db.Where("organization_id = ?", user.OrganizationId).
 		Preload("Conversation").Preload("CreatedBy").
 		Order("created_at DESC").
 		Find(&tickets).Error; err != nil {
@@ -120,13 +59,13 @@ func (t *ticketServiceImpl) GetTicketsByOrganization(organizationID uint) (*resp
 }
 
 // UpdateTicket implements services.TicketService.
-func (t *ticketServiceImpl) UpdateTicket(ticketID uint, req requestdto.UpdateTicketRequest) (*responsedto.TicketResponse, error) {
+func (t *OrganizationTicketServiceImpl) UpdateTicket(user *jwtLib.Claims, ticketID uint, req requestdto.UpdateTicketRequest) error {
 	var ticket models.TicketModel
-	if err := database.DB.First(&ticket, ticketID).Error; err != nil {
+	if err := t.db.First(&ticket, ticketID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("ticket not found")
+			return errors.New("ticket not found")
 		}
-		return nil, errors.New("failed to fetch ticket")
+		return errors.New("failed to fetch ticket")
 	}
 
 	if req.Name != "" {
@@ -136,27 +75,26 @@ func (t *ticketServiceImpl) UpdateTicket(ticketID uint, req requestdto.UpdateTic
 		ticket.Status = req.Status
 	}
 
-	if err := database.DB.Save(&ticket).Error; err != nil {
-		return nil, errors.New("failed to update ticket")
+	if err := t.db.Save(&ticket).Error; err != nil {
+		return errors.New("failed to update ticket")
 	}
 
-	if err := database.DB.Preload("Organization").Preload("Conversation").Preload("CreatedBy").First(&ticket, ticket.ID).Error; err != nil {
-		return nil, errors.New("failed to load ticket details")
+	if err := t.db.Preload("Organization").Preload("Conversation").Preload("CreatedBy").First(&ticket, ticket.ID).Error; err != nil {
+		return errors.New("failed to load ticket details")
 	}
 
-	return t.mapToTicketResponse(&ticket), nil
+	return nil
 }
 
-
-func (t *ticketServiceImpl) generateTicketNumber(organizationID uint) string {
+func (t *OrganizationTicketServiceImpl) generateTicketNumber(organizationID uint) string {
 	var count int64
-	database.DB.Model(&models.TicketModel{}).Where("organization_id = ?", organizationID).Count(&count)
+	t.db.Model(&models.TicketModel{}).Where("organization_id = ?", organizationID).Count(&count)
 
 	timestamp := time.Now().Format("20060102")
 	return fmt.Sprintf("TKT-%d-%s-%04d", organizationID, timestamp, count+1)
 }
 
-func (t *ticketServiceImpl) mapToTicketResponse(ticket *models.TicketModel) *responsedto.TicketResponse {
+func (t *OrganizationTicketServiceImpl) mapToTicketResponse(ticket *models.TicketModel) *responsedto.TicketResponse {
 	response := &responsedto.TicketResponse{
 		ID:             ticket.ID,
 		OrganizationID: ticket.OrganizationID,
@@ -196,7 +134,7 @@ func (t *ticketServiceImpl) mapToTicketResponse(ticket *models.TicketModel) *res
 	return response
 }
 
-func (t *ticketServiceImpl) buildTicketListResponse(tickets []models.TicketModel) *responsedto.TicketListResponse {
+func (t *OrganizationTicketServiceImpl) buildTicketListResponse(tickets []models.TicketModel) *responsedto.TicketListResponse {
 	var ticketResponses []responsedto.TicketResponse
 	for _, ticket := range tickets {
 		ticketResponses = append(ticketResponses, *t.mapToTicketResponse(&ticket))
@@ -212,7 +150,6 @@ func (t *ticketServiceImpl) buildTicketListResponse(tickets []models.TicketModel
 	}
 }
 
-
-func NewTicketService() services.TicketService {
-	return &ticketServiceImpl{}
+func NewTicketService(db *gorm.DB) services.OrganizationTicketService {
+	return &OrganizationTicketServiceImpl{db:db}
 }

@@ -1,7 +1,6 @@
 package impl
 
 import (
-	"DewaSRY/sociomile-app/internal/database"
 	"DewaSRY/sociomile-app/internal/services"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
@@ -13,12 +12,13 @@ import (
 )
 
 type organizationCrudServiceImpl struct {
+	db *gorm.DB
 }
 
 // CreateOrganization implements services.OrganizationService.
 func (t *organizationCrudServiceImpl) CreateOrganization(req requestdto.CreateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
 	var owner models.UserModel
-	if err := database.DB.First(&owner, req.OwnerID).Error; err != nil {
+	if err := t.db.First(&owner, req.OwnerID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("owner user not found")
 		}
@@ -30,17 +30,17 @@ func (t *organizationCrudServiceImpl) CreateOrganization(req requestdto.CreateOr
 		OwnerID: req.OwnerID,
 	}
 
-	if err := database.DB.Create(&organization).Error; err != nil {
+	if err := t.db.Create(&organization).Error; err != nil {
 		return nil, errors.New("failed to create organization")
 	}
 
-	if err := database.DB.Model(&owner).Updates(map[string]interface{}{
+	if err := t.db.Model(&owner).Updates(map[string]interface{}{
 		"organization_id": organization.ID,
 	}).Error; err != nil {
 		return nil, errors.New("failed to update owner's organization")
 	}
 
-	if err := database.DB.Preload("Owner").First(&organization, organization.ID).Error; err != nil {
+	if err := t.db.Preload("Owner").First(&organization, organization.ID).Error; err != nil {
 		return nil, errors.New("failed to load organization details")
 	}
 
@@ -50,12 +50,12 @@ func (t *organizationCrudServiceImpl) CreateOrganization(req requestdto.CreateOr
 // CreateOwnerUser implements services.OrganizationService.
 func (t *organizationCrudServiceImpl) CreateOwnerUser(email string, name string, password string) (*models.UserModel, error) {
 	var existingUser models.UserModel
-	if err := database.DB.Where("email = ?", email).First(&existingUser).Error; err == nil {
+	if err := t.db.Where("email = ?", email).First(&existingUser).Error; err == nil {
 		return nil, errors.New("user with this email already exists")
 	}
 
 	var ownerRole models.UserRoleModel
-	if err := database.DB.Where("name = ?", models.RoleOrganizationOwner).First(&ownerRole).Error; err != nil {
+	if err := t.db.Where("name = ?", models.RoleOrganizationOwner).First(&ownerRole).Error; err != nil {
 		return nil, fmt.Errorf("organization owner role not found: %v", err)
 	}
 
@@ -66,7 +66,7 @@ func (t *organizationCrudServiceImpl) CreateOwnerUser(email string, name string,
 		RoleID:   ownerRole.ID,
 	}
 
-	if err := database.DB.Create(&user).Error; err != nil {
+	if err := t.db.Create(&user).Error; err != nil {
 		return nil, errors.New("failed to create user")
 	}
 
@@ -76,14 +76,14 @@ func (t *organizationCrudServiceImpl) CreateOwnerUser(email string, name string,
 // DeleteOrganization implements services.OrganizationService.
 func (t *organizationCrudServiceImpl) DeleteOrganization(id uint) error {
 	var organization models.OrganizationModel
-	if err := database.DB.First(&organization, id).Error; err != nil {
+	if err := t.db.First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("organization not found")
 		}
 		return errors.New("failed to fetch organization")
 	}
 
-	if err := database.DB.Delete(&organization).Error; err != nil {
+	if err := t.db.Delete(&organization).Error; err != nil {
 		return errors.New("failed to delete organization")
 	}
 
@@ -93,7 +93,7 @@ func (t *organizationCrudServiceImpl) DeleteOrganization(id uint) error {
 // GetAllOrganizations implements services.OrganizationService.
 func (t *organizationCrudServiceImpl) GetAllOrganizations() (*responsedto.OrganizationListResponse, error) {
 	var organizations []models.OrganizationModel
-	if err := database.DB.Preload("Owner").Find(&organizations).Error; err != nil {
+	if err := t.db.Preload("Owner").Find(&organizations).Error; err != nil {
 		return nil, errors.New("failed to fetch organizations")
 	}
 
@@ -115,7 +115,7 @@ func (t *organizationCrudServiceImpl) GetAllOrganizations() (*responsedto.Organi
 // GetOrganizationByID implements services.OrganizationService.
 func (t *organizationCrudServiceImpl) GetOrganizationByID(id uint) (*responsedto.OrganizationResponse, error) {
 	var organization models.OrganizationModel
-	if err := database.DB.Preload("Owner").First(&organization, id).Error; err != nil {
+	if err := t.db.Preload("Owner").First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("organization not found")
 		}
@@ -132,25 +132,25 @@ func (t *organizationCrudServiceImpl) GetOrganizationStats(organizationID uint) 
 	var pendingConversations int64
 	var pendingTickets int64
 
-	if err := database.DB.Model(&models.ConversationModel{}).
+	if err := t.db.Model(&models.ConversationModel{}).
 		Where("organization_id = ?", organizationID).
 		Count(&totalConversations).Error; err != nil {
 		return nil, errors.New("failed to count conversations")
 	}
 
-	if err := database.DB.Model(&models.ConversationModel{}).
+	if err := t.db.Model(&models.ConversationModel{}).
 		Where("organization_id = ? AND status = ?", organizationID, models.ConversationStatusPending).
 		Count(&pendingConversations).Error; err != nil {
 		return nil, errors.New("failed to count pending conversations")
 	}
 
-	if err := database.DB.Model(&models.TicketModel{}).
+	if err := t.db.Model(&models.TicketModel{}).
 		Where("organization_id = ?", organizationID).
 		Count(&totalTickets).Error; err != nil {
 		return nil, errors.New("failed to count tickets")
 	}
 
-	if err := database.DB.Model(&models.TicketModel{}).
+	if err := t.db.Model(&models.TicketModel{}).
 		Where("organization_id = ? AND status = ?", organizationID, models.TicketStatusPending).
 		Count(&pendingTickets).Error; err != nil {
 		return nil, errors.New("failed to count pending tickets")
@@ -167,7 +167,7 @@ func (t *organizationCrudServiceImpl) GetOrganizationStats(organizationID uint) 
 // UpdateOrganization implements services.OrganizationService.
 func (t *organizationCrudServiceImpl) UpdateOrganization(id uint, req requestdto.UpdateOrganizationRequest) (*responsedto.OrganizationResponse, error) {
 	var organization models.OrganizationModel
-	if err := database.DB.First(&organization, id).Error; err != nil {
+	if err := t.db.First(&organization, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("organization not found")
 		}
@@ -176,11 +176,11 @@ func (t *organizationCrudServiceImpl) UpdateOrganization(id uint, req requestdto
 
 	organization.Name = req.Name
 
-	if err := database.DB.Save(&organization).Error; err != nil {
+	if err := t.db.Save(&organization).Error; err != nil {
 		return nil, errors.New("failed to update organization")
 	}
 
-	if err := database.DB.Preload("Owner").First(&organization, organization.ID).Error; err != nil {
+	if err := t.db.Preload("Owner").First(&organization, organization.ID).Error; err != nil {
 		return nil, errors.New("failed to load organization details")
 	}
 
@@ -207,6 +207,6 @@ func (t *organizationCrudServiceImpl) mapToOrganizationResponse(org *models.Orga
 	return response
 }
 
-func NewOrganizationCrudService() services.OrganizationCrudService {
-	return &organizationCrudServiceImpl{}
+func NewOrganizationCrudService(db *gorm.DB) services.OrganizationCrudService {
+	return &organizationCrudServiceImpl{db:db}
 }

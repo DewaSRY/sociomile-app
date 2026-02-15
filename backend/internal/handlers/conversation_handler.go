@@ -15,12 +15,12 @@ import (
 )
 
 type ConversationHandler struct {
-	service        services.ConversationService
+	service        services.OrganizationConversationService
 	messageService services.ConversationMessageService
 }
 
 func NewConversationHandler(
-	service        services.ConversationService,
+	service        services.OrganizationConversationService,
 	messageService services.ConversationMessageService,
 ) *ConversationHandler {
 	return &ConversationHandler{

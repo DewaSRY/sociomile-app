@@ -1,7 +1,6 @@
 package impl
 
 import (
-	"DewaSRY/sociomile-app/internal/database"
 	"DewaSRY/sociomile-app/internal/services"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
@@ -12,12 +11,13 @@ import (
 )
 
 type conversationMessageServiceImpl struct {
+	db *gorm.DB
 }
 
 // CreateMessage implements services.ConversationMessageService.
 func (t *conversationMessageServiceImpl) CreateMessage(userID uint, req requestdto.CreateConversationMessageRequest) (*responsedto.ConversationMessageResponse, error) {
 	var conversation models.ConversationModel
-	if err := database.DB.First(&conversation, req.ConversationID).Error; err != nil {
+	if err := t.db.First(&conversation, req.ConversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("conversation not found")
 		}
@@ -31,11 +31,11 @@ func (t *conversationMessageServiceImpl) CreateMessage(userID uint, req requestd
 		Message:        req.Message,
 	}
 
-	if err := database.DB.Create(&message).Error; err != nil {
+	if err := t.db.Create(&message).Error; err != nil {
 		return nil, errors.New("failed to create message")
 	}
 
-	if err := database.DB.Preload("CreatedBy").First(&message, message.ID).Error; err != nil {
+	if err := t.db.Preload("CreatedBy").First(&message, message.ID).Error; err != nil {
 		return nil, errors.New("failed to load message details")
 	}
 
@@ -45,7 +45,7 @@ func (t *conversationMessageServiceImpl) CreateMessage(userID uint, req requestd
 // GetMessagesByConversation implements services.ConversationMessageService.
 func (t *conversationMessageServiceImpl) GetMessagesByConversation(conversationID uint) (*responsedto.ConversationMessageListResponse, error) {
 		var messages []models.ConversationMessageModel
-	if err := database.DB.Where("conversation_id = ?", conversationID).
+	if err := t.db.Where("conversation_id = ?", conversationID).
 		Preload("CreatedBy").
 		Order("created_at ASC").
 		Find(&messages).Error; err != nil {
@@ -90,6 +90,6 @@ func (conversationMessageServiceImpl *conversationMessageServiceImpl) mapToMessa
 }
 
 
-func NewConversationMessageService() services.ConversationMessageService {
-	return &conversationMessageServiceImpl{}
+func NewConversationMessageService(db *gorm.DB) services.ConversationMessageService {
+	return &conversationMessageServiceImpl{db:db}
 }
