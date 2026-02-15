@@ -1006,6 +1006,52 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/webhooks/conversations": {
+            "post": {
+                "description": "Create message conversation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "webhooks-conversation"
+                ],
+                "summary": "Create message conversation",
+                "parameters": [
+                    {
+                        "description": "Create message conversation",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.WebHooksRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1174,6 +1220,27 @@ const docTemplate = `{
                 }
             }
         },
+        "DewaSRY_sociomile-app_pkg_dtos_requestdto.WebHooksRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "message",
+                "organizationId"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string",
+                    "maxLength": 5000,
+                    "minLength": 1
+                },
+                "organizationId": {
+                    "type": "integer"
+                }
+            }
+        },
         "DewaSRY_sociomile-app_pkg_dtos_responsedto.AuthResponse": {
             "type": "object",
             "properties": {
@@ -1285,6 +1352,12 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageResponse"
+                    }
                 },
                 "organization": {
                     "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse"

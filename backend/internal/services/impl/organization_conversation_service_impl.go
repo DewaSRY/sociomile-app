@@ -55,7 +55,11 @@ func (t *organizationConversationServiceImpl) AssignConversation(conversationID 
 // GetConversationByID implements services.ConversationService.
 func (t *organizationConversationServiceImpl) GetConversationByID(id uint) (*responsedto.ConversationResponse, error) {
 	var conversation models.ConversationModel
-	if err := t.db.Preload("Organization").Preload("Guest").Preload("OrganizationStaff").First(&conversation, id).Error; err != nil {
+	if err := t.db.Preload("Organization").
+		Preload("Guest").
+		Preload("OrganizationStaff").
+		Preload("ConversationMessages").
+		First(&conversation, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("conversation not found")
 		}
@@ -159,6 +163,38 @@ func (t *organizationConversationServiceImpl) mapToConversationResponse(conv *mo
 			ID:    conv.OrganizationStaff.ID,
 			Email: conv.OrganizationStaff.Email,
 			Name:  conv.OrganizationStaff.Name,
+		}
+	}
+	   if len(conv.ConversationMessages) > 0 {
+        messages := make([]responsedto.ConversationMessageResponse, 0, len(conv.ConversationMessages))
+        for i := range conv.ConversationMessages {
+            msg := t.mapToMessageResponse(&conv.ConversationMessages[i])
+            messages = append(messages, *msg)
+        }
+        response.Messages = messages
+    } else {
+        response.Messages = []responsedto.ConversationMessageResponse{}
+    }
+
+	return response
+}
+
+func (t *organizationConversationServiceImpl) mapToMessageResponse(msg *models.ConversationMessageModel) *responsedto.ConversationMessageResponse {
+	response := &responsedto.ConversationMessageResponse{
+		ID:             msg.ID,
+		OrganizationID: msg.OrganizationID,
+		ConversationID: msg.ConversationID,
+		CreatedByID:    msg.CreatedByID,
+		Message:        msg.Message,
+		CreatedAt:      msg.CreatedAt,
+		UpdatedAt:      msg.UpdatedAt,
+	}
+
+	if msg.CreatedBy != nil {
+		response.CreatedBy = &responsedto.UserData{
+			ID:    msg.CreatedBy.ID,
+			Email: msg.CreatedBy.Email,
+			Name:  msg.CreatedBy.Name,
 		}
 	}
 

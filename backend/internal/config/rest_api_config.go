@@ -22,6 +22,7 @@ type RestAPIConfig struct {
 	HubRouter          routers.HubRouter
 	OrganizationRouter routers.OrganizationRouter
 	GuestRouter	routers.GuestRouter
+	WebHookRouter routers.WebHook
 }
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
@@ -59,6 +60,7 @@ func (cfg *RestAPIConfig) Run() {
 		cfg.HubRouter.Register(r)
 		cfg.OrganizationRouter.Register(r)
 		cfg.GuestRouter.Register(r)
+		cfg.WebHookRouter.Register(r)
 	})
 
 	server := &http.Server{

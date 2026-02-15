@@ -17,6 +17,7 @@ type ConversationModel struct {
 	Guest                *UserModel         `gorm:"foreignKey:GuestID" json:"guest,omitempty"`
 	OrganizationStaffID  *uint              `gorm:"index" json:"organization_staff_id,omitempty"`
 	OrganizationStaff    *UserModel         `gorm:"foreignKey:OrganizationStaffID" json:"organization_staff,omitempty"`
+	ConversationMessages  []ConversationMessageModel `gorm:"foreignKey:ConversationID"`
 	Status               string             `gorm:"not null;default:'pending'" json:"status"`
 }
 

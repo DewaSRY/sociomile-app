@@ -67,6 +67,7 @@ func (t *guestMessageServiceImpl) SendConversationMessage(user *jwt.Claims, req 
 		Message:        req.Message,
 		ConversationID: conversation.ID,
 	}
+	
 	if err := t.db.Create(&newMessages).Error; err != nil {
 		return errors.New("failed to create message")
 	}

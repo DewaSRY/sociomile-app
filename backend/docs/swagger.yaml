@@ -115,6 +115,21 @@ definitions:
         - done
         type: string
     type: object
+  DewaSRY_sociomile-app_pkg_dtos_requestdto.WebHooksRequest:
+    properties:
+      email:
+        type: string
+      message:
+        maxLength: 5000
+        minLength: 1
+        type: string
+      organizationId:
+        type: integer
+    required:
+    - email
+    - message
+    - organizationId
+    type: object
   DewaSRY_sociomile-app_pkg_dtos_responsedto.AuthResponse:
     properties:
       token:
@@ -188,6 +203,10 @@ definitions:
         type: integer
       id:
         type: integer
+      messages:
+        items:
+          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ConversationMessageResponse'
+        type: array
       organization:
         $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse'
       organizationId:
@@ -948,6 +967,36 @@ paths:
       summary: Update ticket
       tags:
       - organization-tickets
+  /webhooks/conversations:
+    post:
+      consumes:
+      - application/json
+      description: Create message conversation
+      parameters:
+      - description: Create message conversation
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_requestdto.WebHooksRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.ErrorResponse'
+      summary: Create message conversation
+      tags:
+      - webhooks-conversation
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

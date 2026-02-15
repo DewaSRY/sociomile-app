@@ -42,6 +42,8 @@ func main() {
 	
 	guestConversationSvc := serviceImpl.NewGuestConversationService(db)
 	guestMessageSvc := serviceImpl.NewGuestMessageService(db)
+
+	webHookSvc := serviceImpl.NewWebHookConversationService(db)
 	
 	authHandler := handlers.NewAuthHandler(authServiceSvc)
 	organizationHandler := handlers.NewOrganizationHandler(organizationCrudSvc)
@@ -52,6 +54,8 @@ func main() {
 	hubHandler := handlers.NewHubHandler(hubSvc)
 	guestConversationHandler := handlers.NewGuestConversationHandler(jwtSvc, guestConversationSvc)
 	guestMessageHandler := handlers.NewGuestMessageHandler(jwtSvc, guestMessageSvc)
+
+	webHookHandler := handlers.NewWebHookHandler(webHookSvc)
 
 	authRouter := routers.AuthRouter{
 		JwtService:  jwtSvc,
@@ -79,12 +83,17 @@ func main() {
 		GuestMessageHandler:      *guestMessageHandler,
 	}
 
+	webHookRoute := routers.WebHook{
+		WebHookHandler : *webHookHandler,
+	}
+
 	restAPIConfig := &config.RestAPIConfig{
 		Config:             cfg,
 		AuthRouter:         authRouter,
 		HubRouter:          hubRouter,
 		OrganizationRouter: organizationRouter,
 		GuestRouter:        guestRoute,
+		WebHookRouter: webHookRoute,
 	}
 
 	restAPIConfig.Run()

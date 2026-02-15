@@ -1,20 +1,57 @@
 all: build test
-PROTO_DIR := proto
-PROTO_SRC := $(wildcard $(PROTO_DIR)/*.proto)
 GO_OUT := .
 
-POSTGRES_URI := 
 
+DB_DRIVER := mysql
+DB_DSN  := 
+MIGRATION_DIR := ./backend/migrations
 
-//make migration-create name=create_users_table
+all: build
+
+build:
+	go build -o bin/$(APP_NAME) ./cmd
+
+dev:
+	@echo "Starting development server..."
+	cd backend && go run ./cmd/server
+
+test:
+	go test ./...
+
+clean:
+	rm -rf bin
+
 migration-create:
-	goose -dir ./backend/migrations create $(name) sql
+	@if [ -z "$(name)" ]; then \
+		echo "Usage: make migration-create name=create_users_table"; \
+		exit 1; \
+	fi
+	goose -dir $(MIGRATION_DIR) create $(name) sql
 
 migration-up:
-	goose -dir ./backend/migrations postgres $(POSTGRES_URI) up
+	goose -dir $(MIGRATION_DIR) $(DB_DRIVER) "$(DB_DSN)" up
 
 migration-down:
-	goose -dir ./backend/migrations postgres $(POSTGRES_URI) down
+	goose -dir $(MIGRATION_DIR) $(DB_DRIVER) "$(DB_DSN)" down
 
+migration-status:
+	goose -dir $(MIGRATION_DIR) $(DB_DRIVER) "$(DB_DSN)" status
 
-.PHONY: all build run test clean watch docker-run docker-down itest
+seed:
+	@echo "Running database seeder..."
+	cd backend && go run ./cmd/seed
+
+gen-doc:
+	@echo "Generating swagger docs..."
+	cd backend && swag init -g ./cmd/server/main.go -o ../docs
+
+# Help
+run-dev:
+	@make gen-doc
+	@make dev
+
+# ===============================
+# DECLARE PHONY
+# ===============================
+.PHONY: all build run test clean \
+        migration-create migration-up migration-down migration-status seed gen-doc run-with-docs

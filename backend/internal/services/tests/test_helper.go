@@ -29,7 +29,6 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 	return tx
 }
 
-// GetOrCreateRole gets an existing role or creates a new one
 func GetOrCreateRole(tx *gorm.DB, roleName string) (*models.UserRoleModel, error) {
 	var role models.UserRoleModel
 	err := tx.Where("name = ?", roleName).FirstOrCreate(&role, models.UserRoleModel{
@@ -38,15 +37,12 @@ func GetOrCreateRole(tx *gorm.DB, roleName string) (*models.UserRoleModel, error
 	return &role, err
 }
 
-// CreateTestOrganizationWithOwner creates a test organization with an owner user
 func CreateTestOrganizationWithOwner(tx *gorm.DB, t *testing.T, orgName string) (*models.OrganizationModel, *models.UserModel) {
-	// Get or create owner role
 	ownerRole, err := GetOrCreateRole(tx, models.RoleOrganizationOwner)
 	if err != nil {
 		t.Fatalf("failed to get or create owner role: %v", err)
 	}
 
-	// Create owner user first
 	owner := models.UserModel{
 		Email:    "owner_" + orgName + "@example.com",
 		Name:     "Owner of " + orgName,
@@ -57,7 +53,6 @@ func CreateTestOrganizationWithOwner(tx *gorm.DB, t *testing.T, orgName string) 
 		t.Fatalf("failed to create owner user: %v", err)
 	}
 
-	// Create organization with owner
 	org := models.OrganizationModel{
 		Name:    orgName,
 		OwnerID: owner.ID,
@@ -66,7 +61,6 @@ func CreateTestOrganizationWithOwner(tx *gorm.DB, t *testing.T, orgName string) 
 		t.Fatalf("failed to create organization: %v", err)
 	}
 
-	// Update user's organization ID
 	owner.OrganizationID = &org.ID
 	if err := tx.Save(&owner).Error; err != nil {
 		t.Fatalf("failed to update owner's organization: %v", err)

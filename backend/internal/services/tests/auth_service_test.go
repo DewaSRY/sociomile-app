@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// MockJwtService implements jwtLib.JwtService for testing
 type MockJwtService struct {
 	GenerateTokenFunc func(userID uint, email string, roleID uint, organizationID *uint) (string, error)
 	RefreshTokenFunc  func(tokenString string) (string, error)
@@ -37,7 +36,6 @@ func (m *MockJwtService) GetUserFromContext(ctx context.Context) (*jwtLib.Claims
 	return nil, false
 }
 
-// Test Register method
 func TestAuthService_Register(t *testing.T) {
 	tx := SetupTestDB(t)
 	mockJwt := &MockJwtService{}
@@ -69,7 +67,6 @@ func TestAuthService_Register(t *testing.T) {
 	}
 }
 
-// Test Login method
 func TestAuthService_Login(t *testing.T) {
 	tx := SetupTestDB(t)
 	mockJwt := &MockJwtService{}
@@ -105,7 +102,6 @@ func TestAuthService_Login(t *testing.T) {
 	}
 }
 
-// Test GetUserByID method
 func TestAuthService_GetUserByID(t *testing.T) {
 	tx := SetupTestDB(t)
 	mockJwt := &MockJwtService{}
@@ -136,7 +132,6 @@ func TestAuthService_GetUserByID(t *testing.T) {
 	}
 }
 
-// Test RefreshToken method
 func TestAuthService_RefreshToken(t *testing.T) {
 	tx := SetupTestDB(t)
 	mockJwt := &MockJwtService{}
