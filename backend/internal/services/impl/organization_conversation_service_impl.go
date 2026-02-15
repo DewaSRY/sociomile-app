@@ -1,7 +1,6 @@
 package impl
 
 import (
-	"DewaSRY/sociomile-app/internal/database"
 	"DewaSRY/sociomile-app/internal/services"
 	"DewaSRY/sociomile-app/pkg/dtos/filtersdto"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
@@ -20,7 +19,7 @@ type organizationConversationServiceImpl struct {
 // AssignConversation implements services.ConversationService.
 func (t *organizationConversationServiceImpl) AssignConversation(conversationID uint, req requestdto.AssignConversationRequest) (*responsedto.ConversationResponse, error) {
 	var conversation models.ConversationModel
-	if err := database.DB.First(&conversation, conversationID).Error; err != nil {
+	if err := t.db.First(&conversation, conversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("conversation not found")
 		}
@@ -28,7 +27,7 @@ func (t *organizationConversationServiceImpl) AssignConversation(conversationID 
 	}
 
 	var staff models.UserModel
-	if err := database.DB.First(&staff, req.OrganizationStaffID).Error; err != nil {
+	if err := t.db.First(&staff, req.OrganizationStaffID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("staff user not found")
 		}
@@ -42,11 +41,11 @@ func (t *organizationConversationServiceImpl) AssignConversation(conversationID 
 	conversation.OrganizationStaffID = &req.OrganizationStaffID
 	conversation.Status = models.ConversationStatusInProgress
 
-	if err := database.DB.Save(&conversation).Error; err != nil {
+	if err := t.db.Save(&conversation).Error; err != nil {
 		return nil, errors.New("failed to assign conversation")
 	}
 
-	if err := database.DB.Preload("Organization").Preload("Guest").Preload("OrganizationStaff").First(&conversation, conversation.ID).Error; err != nil {
+	if err := t.db.Preload("Organization").Preload("Guest").Preload("OrganizationStaff").First(&conversation, conversation.ID).Error; err != nil {
 		return nil, errors.New("failed to load conversation details")
 	}
 
@@ -56,7 +55,7 @@ func (t *organizationConversationServiceImpl) AssignConversation(conversationID 
 // GetConversationByID implements services.ConversationService.
 func (t *organizationConversationServiceImpl) GetConversationByID(id uint) (*responsedto.ConversationResponse, error) {
 	var conversation models.ConversationModel
-	if err := database.DB.Preload("Organization").Preload("Guest").Preload("OrganizationStaff").First(&conversation, id).Error; err != nil {
+	if err := t.db.Preload("Organization").Preload("Guest").Preload("OrganizationStaff").First(&conversation, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("conversation not found")
 		}
@@ -77,7 +76,7 @@ func (t *organizationConversationServiceImpl) GetConversationsList(user *jwt.Cla
 		return nil, errors.New("failed to count organizations")
 	}
 
-	if err := database.DB.Where("organization_id = ?", user.OrganizationId).
+	if err := t.db.Where("organization_id = ?", user.OrganizationId).
 		Offset(offset).Limit(*filter.Limit).
 		Preload("Guest").
 		Preload("OrganizationStaff").
@@ -104,7 +103,7 @@ func (t *organizationConversationServiceImpl) GetConversationsList(user *jwt.Cla
 // UpdateConversationStatus implements services.ConversationService.
 func (t *organizationConversationServiceImpl) UpdateConversationStatus(conversationID uint, req requestdto.UpdateConversationRequest) error {
 	var conversation models.ConversationModel
-	if err := database.DB.First(&conversation, conversationID).Error; err != nil {
+	if err := t.db.First(&conversation, conversationID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("conversation not found")
 		}
@@ -113,11 +112,11 @@ func (t *organizationConversationServiceImpl) UpdateConversationStatus(conversat
 
 	conversation.Status = req.Status
 
-	if err := database.DB.Save(&conversation).Error; err != nil {
+	if err := t.db.Save(&conversation).Error; err != nil {
 		return errors.New("failed to update conversation")
 	}
 
-	if err := database.DB.Preload("Organization").
+	if err := t.db.Preload("Organization").
 		Preload("Guest").
 		Preload("OrganizationStaff").First(&conversation, conversation.ID).Error; err != nil {
 		return errors.New("failed to load conversation details")
