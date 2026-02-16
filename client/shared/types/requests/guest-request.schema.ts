@@ -5,7 +5,7 @@ export const CreateConversationRequestSchema = z.object({
 });
 
 export type CreateConversationRequest = z.infer<
-  typeof CreateConversationRequest
+  typeof CreateConversationRequestSchema
 >;
 
 export const CreateConversationMessageSchema = z.object({

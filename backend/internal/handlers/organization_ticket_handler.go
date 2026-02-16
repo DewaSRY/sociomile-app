@@ -36,7 +36,7 @@ func NewOrganizationTicketHandler(
 // @Accept       json
 // @Produce      json
 // @Param        request body requestdto.CreateTicketRequest true "Create Ticket Request"
-// @Success      201  {object}  responsedto.TicketResponse
+// @Success      201  {object}  responsedto.CommonResponse
 // @Failure      400  {object}  responsedto.ErrorResponse
 // @Failure      500  {object}  responsedto.ErrorResponse
 // @Security     BearerAuth

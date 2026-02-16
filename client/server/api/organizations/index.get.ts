@@ -1,21 +1,27 @@
-// import type { OrganizationListResponse } from '~/types';
-// import { API_ENDPOINTS } from '~/config/api.config';
-// import { createServerApi } from '~/composables/useApi';
+import { defineEventHandler } from "h3";
+import { apiClient } from "$shared/lib/api-client";
+import type { OrganizationPaginateResponse, Filters } from "$shared/types";
+import type { AxiosResponse } from "axios";
+import { ORGANIZATION } from "$shared/constants/api-path";
 
-// export default defineEventHandler(async (event) => {
-//   const api = createServerApi(event);
-//   const query = getQuery(event);
+export default defineEventHandler(async (event) => {
+  const token = getCookie(event, "auth_token");
+  const query = getQuery(event) as Partial<Filters>;
+  try {
+    const { data } = await apiClient.get<
+      AxiosResponse<OrganizationPaginateResponse>
+    >(ORGANIZATION, {
+      headers: {
+        Authorization: token,
+      },
+      params: query,
+    });
 
-//   try {
-//     const response = await api.get<OrganizationListResponse>(
-//       API_ENDPOINTS.organizations.list,
-//       { params: query }
-//     );
-//     return response;
-//   } catch (error: any) {
-//     throw createError({
-//       statusCode: error.response?.status || 500,
-//       message: error.response?.data?.message || 'Failed to fetch organizations',
-//     });
-//   }
-// });
+    return data;
+  } catch (err: any) {
+    return {
+      error: true,
+      message: err.response?.data?.message || "Login failed",
+    };
+  }
+});

@@ -931,7 +931,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.TicketResponse"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse"
                         }
                     },
                     "400": {

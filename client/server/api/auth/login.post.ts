@@ -1,28 +1,31 @@
-// import type { LoginRequest, AuthResponse } from '~/types';
-// import { API_ENDPOINTS } from '~/config/api.config';
-// import { createServerApi } from '~/composables/useApi';
+import { defineEventHandler, readBody, setCookie } from "h3";
+import { apiClient } from "$shared/lib/api-client";
+import type { LoginRequest, AuthResponse } from "$shared/types";
+import type { AxiosResponse } from "axios";
+import { API_AUTH_SIGNIN } from "$shared/constants/api-path";
 
-// export default defineEventHandler(async (event) => {
-//   const body = await readBody<LoginRequest>(event);
-//   const api = createServerApi(event);
+export default defineEventHandler(async (event) => {
+  const body = await readBody<LoginRequest>(event);
 
-//   try {
-//     const response = await api.post<AuthResponse>(API_ENDPOINTS.auth.login, body);
+  try {
+    const { data } = await apiClient.post<
+      LoginRequest,
+      AxiosResponse<AuthResponse>
+    >(API_AUTH_SIGNIN, body);
 
-//     // Set cookie
-//     setCookie(event, 'auth_token', response.token, {
-//       maxAge: 60 * 60 * 24 * 7, // 7 days
-//       sameSite: 'lax',
-//       secure: process.env.NODE_ENV === 'production',
-//       httpOnly: true,
-//       path: '/',
-//     });
+    setCookie(event, "auth_token", `Bearer ${data.token}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
 
-//     return response;
-//   } catch (error: any) {
-//     throw createError({
-//       statusCode: error.response?.status || 500,
-//       message: error.response?.data?.message || 'Login failed',
-//     });
-//   }
-// });
+    return data.user;
+  } catch (err: any) {
+    return {
+      error: true,
+      message: err.response?.data?.message || "Login failed",
+    };
+  }
+});
