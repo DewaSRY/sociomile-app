@@ -1,5 +1,7 @@
 # sociomile-app
 
+![thumbnail](/doc/images/thumbnail.png)
+
 ## Author 
 Name : Dewa Surya Ariesta (Full stack Engineer)
 
