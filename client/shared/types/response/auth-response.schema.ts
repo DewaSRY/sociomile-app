@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { OrganizationResponseSchema } from "$shared/types/response/organization-response.schema";
+import { RoleEnumSchema } from "$shared/types/common";
 
 export const UserDataSchema = z.object({
   id: z.number(),
@@ -14,7 +15,7 @@ export const UserProfileDataSchema = z.object({
   id: z.number(),
   email: z.string(),
   name: z.string(),
-  RoleName: z.string(),
+  roleName: RoleEnumSchema,
   organization: OrganizationResponseSchema.optional(),
 });
 

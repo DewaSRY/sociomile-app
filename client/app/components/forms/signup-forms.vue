@@ -110,7 +110,7 @@ async function onSubmit(event: FormSubmitEvent<SignupForm>) {
       name: event.data.name,
     };
 
-    await $fetch(API_AUTH_SIGNUP, {
+    const data = await $fetch<UserProfileData>(API_AUTH_SIGNUP, {
       method: "POST",
       body,
     });
@@ -122,7 +122,19 @@ async function onSubmit(event: FormSubmitEvent<SignupForm>) {
       icon: "i-heroicons-check-circle",
     });
 
-    await navigateTo("/dashboard");
+    if (data.roleName === "super_admin") {
+      await navigateTo("/hub/dashboard");
+      return;
+    } else if (
+      data.roleName === "organization_owner" ||
+      data.roleName === "organization_sales"
+    ) {
+      await navigateTo("/hub/organizations");
+      return;
+    } else {
+      await navigateTo("/guest/dashboard");
+      return;
+    }
   } catch (error) {
     toast.add({
       title: "Sign Up Failed",

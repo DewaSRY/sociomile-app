@@ -73,6 +73,6 @@ npm run dev
 ```
 
 doc link
-[Application core](https://github.com/DewaSRY/sociomile-app/blob/main/doc/application-core.md)
-[Entity ](https://github.com/DewaSRY/sociomile-app/blob/main/doc/application-entity.md)
-[Business logic ](https://github.com/DewaSRY/sociomile-app/blob/main/doc/business-logic.md)
+- [Application core](https://github.com/DewaSRY/sociomile-app/blob/main/doc/application-core.md)
+- [Entity ](https://github.com/DewaSRY/sociomile-app/blob/main/doc/application-entity.md)
+- [Business logic ](https://github.com/DewaSRY/sociomile-app/blob/main/doc/business-logic.md)

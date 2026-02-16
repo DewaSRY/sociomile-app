@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
-const open = ref(false);
+import UserProfile from "~/components/ui/user-profile.vue";
+import AuthorProfile from "~/components/ui/author-profile.vue";
+import { useProfile } from "~/composables/useProfile";
 
+const { profile, fetchProfile } = useProfile();
+const open = ref(false);
 const links = [
   [
     {
@@ -15,7 +19,6 @@ const links = [
   ],
 ] satisfies NavigationMenuItem[][];
 
-
 const groups = computed(() => [
   {
     id: "links",
@@ -23,6 +26,7 @@ const groups = computed(() => [
     items: links.flat(),
   },
 ]);
+await fetchProfile();
 </script>
 
 <template>
@@ -36,7 +40,13 @@ const groups = computed(() => [
       :ui="{ footer: 'lg:border-t lg:border-default' }"
     >
       <template #header="{ collapsed }">
-        <!-- <TeamsMenu :collapsed="collapsed" /> -->
+        <UserProfile
+          v-if="profile"
+          :name="profile.name"
+          :user-role="profile.roleName"
+          :organization-name="profile.organization?.name"
+          :collapsed="collapsed"
+        />
       </template>
 
       <template #default="{ collapsed }">
@@ -52,23 +62,15 @@ const groups = computed(() => [
           tooltip
           popover
         />
-
-        <UNavigationMenu
-          :collapsed="collapsed"
-          :items="links[1]"
-          orientation="vertical"
-          tooltip
-          class="mt-auto"
-        />
       </template>
 
-      <template #footer="{ collapsed }">
+      <template #footer>
+          <AuthorProfile/>
       </template>
     </UDashboardSidebar>
 
     <UDashboardSearch :groups="groups" />
 
     <slot />
-
   </UDashboardGroup>
 </template>

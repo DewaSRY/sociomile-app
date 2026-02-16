@@ -11,7 +11,6 @@ export const ButtonVariantTypeSchema = z.enum([
 
 export type ButtonVariantType = z.infer<typeof ButtonVariantTypeSchema>;
 
-
 export const ConversationStatusSchema = z.enum([
   "pending",
   "in_progress",
@@ -19,3 +18,12 @@ export const ConversationStatusSchema = z.enum([
 ]);
 
 export type ConversationStatus = z.infer<typeof ConversationStatusSchema>;
+
+export const RoleEnumSchema = z.enum([
+  "super_admin",
+  "organization_owner",
+  "organization_sales",
+  "guest",
+]);
+
+export type RoleEnum = z.infer<typeof RoleEnumSchema>;
