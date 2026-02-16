@@ -1,26 +1,21 @@
 import { defineEventHandler, setCookie, getCookie } from "h3";
 import { apiClient } from "$shared/lib/api-client";
-import type { AuthResponse, RefreshTokenRequest } from "$shared/types";
-import type { AxiosResponse, AxiosError } from "axios";
+import type { UserProfileData } from "$shared/types";
+import type { AxiosError } from "axios";
 
 import { API_AUTH_PROFILE } from "$shared/constants/api-path";
 
 export default defineEventHandler(async (event) => {
+  let token = "";
   try {
-    const token = getCookie(event, "auth_token");
+    token = getCookie(event, "auth_token") ?? "";
 
-    const { data } = await apiClient.get<
-      RefreshTokenRequest,
-      AxiosResponse<AuthResponse>
-    >(
-      API_AUTH_PROFILE,
-      {
-        withCredentials: true,
-        headers: {
-            Authorization: token
-        }
+    const { data } = await apiClient.get<UserProfileData>(API_AUTH_PROFILE, {
+      withCredentials: true,
+      headers: {
+        Authorization: token,
       },
-    );
+    });
 
     return data;
   } catch (error: any) {

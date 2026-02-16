@@ -7,17 +7,20 @@ import (
 	"DewaSRY/sociomile-app/internal/services"
 	"DewaSRY/sociomile-app/pkg/dtos/requestdto"
 	"DewaSRY/sociomile-app/pkg/dtos/responsedto"
+	"DewaSRY/sociomile-app/pkg/lib/jwt"
 	"DewaSRY/sociomile-app/pkg/lib/logger"
 	"DewaSRY/sociomile-app/pkg/utils"
 )
 
 type AuthHandler struct {
 	service services.AuthService
+	jwtService jwt.JwtService
 }
 
-func NewAuthHandler(service services.AuthService) *AuthHandler {
+func NewAuthHandler(service services.AuthService, jwtService jwt.JwtService) *AuthHandler {
 	return &AuthHandler{
 		service: service,
+		jwtService:jwtService,
 	}
 }
 
@@ -89,7 +92,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 // @Failure      409  {object}  responsedto.ErrorResponse
 // @Router       /auth/login [post]
 // Login handles user authentication
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (t *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.LoginRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -111,7 +114,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		logger.ErrorLog("Failed to validate request", errorData)
 		utils.WriteJSONResponse(w, http.StatusBadRequest, errorData)
 	}
-	result, err := h.service.Login(req)
+	result, err := t.service.Login(req)
 	if err != nil {
 		errorData := responsedto.ErrorResponse{
 			Message: "invalid request",
@@ -139,21 +142,22 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Failure      401  {object}  responsedto.ErrorResponse
 // @Router       /auth/profile [get]
 // GetProfile retrieves the authenticated user's profile
-func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+func (t *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context (set by JWT middleware)
-	userID, ok := r.Context().Value("userID").(uint)
+	// userID, ok := r.Context().Value("userID").(uint)
 
-	if !ok {
-		errorData := responsedto.ErrorResponse{
-			Message: "User not authenticated",
-			Error:   "Unauthorized",
-		}
-		logger.ErrorLog("Failed to authenticate", errorData)
-		utils.WriteJSONResponse(w, http.StatusUnauthorized, errorData)
-		return
-	}
+	// if !ok {
+	// 	errorData := responsedto.ErrorResponse{
+	// 		Message: "User not authenticated",
+	// 		Error:   "Unauthorized",
+	// 	}
+	// 	logger.ErrorLog("Failed to authenticate", errorData)
+	// 	utils.WriteJSONResponse(w, http.StatusUnauthorized, errorData)
+	// 	return
+	// }
 
-	result, err := h.service.GetUserByID(userID)
+	user, _ := t.jwtService.GetUserFromContext(r.Context())
+	result, err := t.service.GetUserByID(user.UserID)
 	if err != nil {
 		errorData := responsedto.ErrorResponse{
 			Message: "User not authenticated",
@@ -180,7 +184,7 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 // @Failure      400  {object}  responsedto.ErrorResponse
 // @Router       /auth/refresh [post]
 // RefreshToken generates a new JWT token
-func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
+func (t *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req requestdto.RefreshTokenRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -204,7 +208,7 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newToken, err := h.service.RefreshToken(req.Token)
+	newToken, err := t.service.RefreshToken(req.Token)
 	if err != nil {
 		errorData := responsedto.ErrorResponse{
 			Message: "Invalid or expired token",

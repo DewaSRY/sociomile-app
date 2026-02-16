@@ -45,7 +45,7 @@ func main() {
 
 	webHookSvc := serviceImpl.NewWebHookConversationService(db)
 	
-	authHandler := handlers.NewAuthHandler(authServiceSvc)
+	authHandler := handlers.NewAuthHandler(authServiceSvc, jwtSvc)
 	organizationHandler := handlers.NewOrganizationHandler(organizationCrudSvc)
 	orgStaffHandler := handlers.NewOrganizationStaffHandler(jwtSvc, organizationSvc)
 	organizationTicketHandler := handlers.NewOrganizationTicketHandler(tickerSvc)
