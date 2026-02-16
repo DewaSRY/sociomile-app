@@ -7,30 +7,14 @@ const links = [
     {
       label: "Home",
       icon: "i-lucide-house",
-      to: "/",
-      onSelect: () => {
-        open.value = false;
-      },
-    },
-    {
-      label: "Inbox",
-      icon: "i-lucide-inbox",
-      to: "/inbox",
-      badge: "4",
-      onSelect: () => {
-        open.value = false;
-      },
-    },
-    {
-      label: "Customers",
-      icon: "i-lucide-users",
-      to: "/customers",
+      to: "/hub/dashboard",
       onSelect: () => {
         open.value = false;
       },
     },
   ],
 ] satisfies NavigationMenuItem[][];
+
 
 const groups = computed(() => [
   {
@@ -79,7 +63,6 @@ const groups = computed(() => [
       </template>
 
       <template #footer="{ collapsed }">
-        <!-- <UserMenu :collapsed="collapsed" /> -->
       </template>
     </UDashboardSidebar>
 
