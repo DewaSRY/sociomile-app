@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
-import AuthorProfile from '~/components/ui/author-profile.vue';
+import AuthorProfile from "~/components/ui/author-profile.vue";
 import UserProfile from "~/components/ui/user-profile.vue";
+import { useProfile } from "~/composables/auth/useProfile";
 const { profile, fetchProfile } = useProfile();
 const open = ref(false);
 const links = [
@@ -71,7 +72,7 @@ await fetchProfile();
       </template>
 
       <template #footer>
-         <AuthorProfile/>
+        <AuthorProfile />
       </template>
     </UDashboardSidebar>
 

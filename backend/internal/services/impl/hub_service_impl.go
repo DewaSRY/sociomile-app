@@ -75,7 +75,7 @@ func (t *hubServiceImpl) GetOrganizationPagination(filter filtersdto.FiltersDto)
 		return nil, errors.New("failed to fetch organizations")
 	}
 
-	organizationResponses := make([]responsedto.OrganizationRecord, 0, len(organizations))
+	organizationResponses := make([]responsedto.HubOrganizationRecord, 0, len(organizations))
 
 	for _, org := range organizations {
 		organizationResponses = append(
@@ -94,8 +94,8 @@ func (t *hubServiceImpl) GetOrganizationPagination(filter filtersdto.FiltersDto)
 	}, nil
 }
 
-func (t *hubServiceImpl) mapToOrganizationResponse(org *models.OrganizationModel) *responsedto.OrganizationRecord {
-	response := &responsedto.OrganizationRecord{
+func (t *hubServiceImpl) mapToOrganizationResponse(org *models.OrganizationModel) *responsedto.HubOrganizationRecord {
+	response := &responsedto.HubOrganizationRecord{
 		ID:        org.ID,
 		Name:      org.Name,
 		CreatedAt: org.CreatedAt,
@@ -103,11 +103,7 @@ func (t *hubServiceImpl) mapToOrganizationResponse(org *models.OrganizationModel
 	}
 
 	if org.Owner != nil {
-		response.Owner = &responsedto.UserData{
-			ID:    org.Owner.ID,
-			Email: org.Owner.Email,
-			Name:  org.Owner.Name,
-		}
+		response.OwnerName = org.Owner.Name
 	}
 
 	return response

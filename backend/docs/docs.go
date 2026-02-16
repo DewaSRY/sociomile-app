@@ -1390,6 +1390,26 @@ const docTemplate = `{
                 }
             }
         },
+        "DewaSRY_sociomile-app_pkg_dtos_responsedto.HubOrganizationRecord": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ownerName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationListResponse": {
             "type": "object",
             "properties": {
@@ -1410,31 +1430,11 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationRecord"
+                        "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.HubOrganizationRecord"
                     }
                 },
                 "metadata": {
                     "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.PaginateMetaData"
-                }
-            }
-        },
-        "DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationRecord": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "owner": {
-                    "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData"
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },

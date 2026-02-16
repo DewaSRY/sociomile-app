@@ -229,6 +229,19 @@ definitions:
       message:
         type: string
     type: object
+  DewaSRY_sociomile-app_pkg_dtos_responsedto.HubOrganizationRecord:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      ownerName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationListResponse:
     properties:
       metadata:
@@ -242,23 +255,10 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationRecord'
+          $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.HubOrganizationRecord'
         type: array
       metadata:
         $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.PaginateMetaData'
-    type: object
-  DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationRecord:
-    properties:
-      createdAt:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      owner:
-        $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData'
-      updatedAt:
-        type: string
     type: object
   DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse:
     properties:

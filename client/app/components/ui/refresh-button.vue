@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useRefresh } from "~/composables/auth/useRefresh";
+
 const { fetchRefresh, profile } = useRefresh();
 
 async function handleNavigation() {

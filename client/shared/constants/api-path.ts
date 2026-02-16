@@ -10,7 +10,7 @@ export const API_GUEST_CONVERSATION = BASE_API + "/guest/conversations";
 export const API_GUEST_CONVERSATION_MESSAGES =
   BASE_API + "/guest/conversations/messages";
 
-export const HUB_ORGANIZATION = BASE_API + "/hub/organization";
+export const HUB_ORGANIZATION = BASE_API + "/hub/organizations";
 
 export const ORGANIZATION = BASE_API + "/organization";
 

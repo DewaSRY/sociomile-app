@@ -10,7 +10,15 @@ type OrganizationRecord struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type HubOrganizationRecord struct {
+	ID        uint      `json:"id"`
+	Name      string    `json:"name"`
+	OwnerName string    `json:"ownerName"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
 type OrganizationPaginateResponse struct {
-	Data     []OrganizationRecord `json:"data"`
+	Data     []HubOrganizationRecord `json:"data"`
 	Metadata PaginateMetaData     `json:"metadata"`
 }

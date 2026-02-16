@@ -13,8 +13,8 @@ export const ConversationMessageResponseSchema = z.object({
 
   message: z.string(),
 
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export const ConversationMessagePaginateSchema = z.object({
@@ -40,9 +40,9 @@ export const ConversationResponseSchema = z.object({
   messages: ConversationMessageResponseSchema.array().default([]),
   status: z.string(),
 
-  createdAt: z.string().datetime(),
+  createdAt: z.coerce.date(),
 
-  updatedAt: z.string().datetime(),
+  updatedAt: z.coerce.date(),
 });
 
 export type ConversationResponse = z.infer<typeof ConversationResponseSchema>;

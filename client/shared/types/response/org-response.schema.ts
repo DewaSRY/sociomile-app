@@ -38,8 +38,8 @@ export const TicketResponseSchema = z.object({
   name: z.string(),
   status: z.string(),
 
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type TicketResponse = z.infer<typeof TicketResponseSchema>;
