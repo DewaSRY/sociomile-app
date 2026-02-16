@@ -4,58 +4,37 @@
       title="Welcome Back"
       subtitle="Sign in to your account to continue"
     />
-    <UCard
-      :ui="{
-        body: 'p-6 sm:p-8 space-y-6',
-      }"
-      as="div"
-      variant="subtle"
+
+    <UForm
+      :schema="LoginRequestSchema"
+      :state="formState"
+      class="space-y-4"
+      @submit="onSubmit"
     >
-      <UForm
-        :schema="LoginRequestSchema"
-        :state="formState"
-        class="space-y-4"
-        @submit="onSubmit"
-      >
-        <div class="flex flex-col gap-2">
-          <EmailInputUi
-            v-model="formState.email"
-            label="Email Address"
-            placeholder="you@example.com"
-            name="email"
-            required
-          />
+      <div class="flex flex-col gap-2">
+        <EmailInputUi
+          v-model="formState.email"
+          label="Email Address"
+          placeholder="you@example.com"
+          name="email"
+          required
+        />
 
-          <PasswordInputUi
-            v-model="formState.password"
-            label="Password"
-            placeholder="Enter your password"
-            name="password"
-            required
-          />
+        <PasswordInputUi
+          v-model="formState.password"
+          label="Password"
+          placeholder="Enter your password"
+          name="password"
+          required
+        />
 
-          <SubmitButtonUi
-            label="Sign In"
-            :loading="isLoading"
-          />
-        </div>
-      </UForm>
-    </UCard>
-
-    <div class="text-center mt-6">
-      <span class="text-gray-600 dark:text-gray-400">
-        Don't have an account?
-      </span>
-      <UButton
-        :to="'/auth/signup'"
-        variant="link"
-        color="primary"
-        :padded="false"
-        class="ml-1"
-      >
-        Sign up for free
-      </UButton>
-    </div>
+        <SubmitButtonUi
+          label="Sign In"
+          :loading="isLoading"
+          :disabled="isFormInvalid || isLoading"
+        />
+      </div>
+    </UForm>
   </div>
 </template>
 
