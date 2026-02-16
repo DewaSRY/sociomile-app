@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { UserDataSchema } from "./auth-response.schema";
 import { PaginateMetaDataSchema } from "./pagination-response.schema";
 
 export const OrganizationResponseSchema = z.object({
@@ -8,8 +7,6 @@ export const OrganizationResponseSchema = z.object({
   name: z.string(),
 
   ownerId: z.number().int().nonnegative(),
-
-  owner: UserDataSchema.nullable().optional(),
 
   createdAt: z.string().datetime(),
 

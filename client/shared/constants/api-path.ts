@@ -1,7 +1,7 @@
 export const BASE_API = "/api/v1";
 
 export const API_AUTH_SIGNIN = BASE_API + "/auth/login";
-export const API_AUTH_SIGNUP = BASE_API + "/auth/signup";
+export const API_AUTH_SIGNUP = BASE_API + "/auth/register";
 export const API_AUTH_REFRESH = BASE_API + "/auth/refresh";
 export const API_AUTH_PROFILE = BASE_API + "/auth/profile";
 

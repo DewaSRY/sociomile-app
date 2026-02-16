@@ -1,7 +1,7 @@
 import { defineEventHandler, setCookie, getCookie } from "h3";
 import { apiClient } from "$shared/lib/api-client";
 import type { AuthResponse, RefreshTokenRequest } from "$shared/types";
-import type { AxiosResponse } from "axios";
+import type { AxiosResponse, AxiosError } from "axios";
 
 import { API_AUTH_PROFILE } from "$shared/constants/api-path";
 
@@ -23,10 +23,11 @@ export default defineEventHandler(async (event) => {
     );
 
     return data;
-  } catch (error) {
+  } catch (error: any) {
+    const err = error as AxiosError<any>;
     throw createError({
-      statusCode: 401,
-      statusMessage: "Refresh failed",
+      statusCode: err.response?.status || 500,
+      statusMessage: err.response?.data?.message || "get profile failed",
     });
   }
 });

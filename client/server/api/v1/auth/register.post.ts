@@ -1,7 +1,7 @@
-import { defineEventHandler, readBody, setCookie } from "h3";
+import { defineEventHandler, readBody, setCookie, createError } from "h3";
 import { apiClient } from "$shared/lib/api-client";
 import type { AuthResponse, RegisterRequest } from "$shared/types";
-import type { AxiosResponse } from "axios";
+import type { AxiosResponse, AxiosError } from "axios";
 import { API_AUTH_SIGNUP } from "$shared/constants/api-path";
 
 export default defineEventHandler(async (event) => {
@@ -22,10 +22,11 @@ export default defineEventHandler(async (event) => {
     });
 
     return data.user;
-  } catch (err: any) {
-    return {
-      error: true,
-      message: err.response?.data?.message || "Login failed",
-    };
+  } catch (error: any) {
+    const err = error as AxiosError<any>;
+    throw createError({
+      statusCode: err.response?.status || 500,
+      statusMessage: err.response?.data?.message || "Registration failed",
+    });
   }
 });
