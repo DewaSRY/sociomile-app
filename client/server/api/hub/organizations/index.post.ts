@@ -1,20 +1,20 @@
-import { defineEventHandler } from "h3";
+import { defineEventHandler, readBody, setCookie } from "h3";
 import { apiClient } from "$shared/lib/api-client";
-import type { OrganizationPaginateResponse, Filters } from "$shared/types";
+import type { CommonResponse, RegisterOrganizationRequest } from "$shared/types";
 import type { AxiosResponse } from "axios";
-import { ORGANIZATION } from "$shared/constants/api-path";
+import { HUB_ORGANIZATION } from "$shared/constants/api-path";
 
 export default defineEventHandler(async (event) => {
+  const body = await readBody<RegisterOrganizationRequest>(event);
   const token = getCookie(event, "auth_token");
-  const query = getQuery(event) as Partial<Filters>;
   try {
-    const { data } = await apiClient.get<
-      AxiosResponse<OrganizationPaginateResponse>
-    >(ORGANIZATION, {
+    const { data } = await apiClient.post<
+      RegisterOrganizationRequest,
+      AxiosResponse<CommonResponse>
+    >(HUB_ORGANIZATION, body, {
       headers: {
         Authorization: token,
       },
-      params: query,
     });
 
     return data;

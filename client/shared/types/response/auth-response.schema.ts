@@ -13,4 +13,4 @@ export const AuthResponseSchema = z.object({
   user: UserDataSchema,
 });
 
-export type AuthResponse = z.infer<typeof UserDataSchema>;
+export type AuthResponse = z.infer<typeof AuthResponseSchema>;

@@ -1,21 +1,22 @@
-import { defineEventHandler } from "h3";
+import { defineEventHandler, readBody, setCookie } from "h3";
 import { apiClient } from "$shared/lib/api-client";
-import type { OrganizationPaginateResponse, Filters } from "$shared/types";
+import type { ConversationResponse, Filters } from "$shared/types";
 import type { AxiosResponse } from "axios";
-import { ORGANIZATION } from "$shared/constants/api-path";
+import { API_GUEST_CONVERSATION } from "$shared/constants/api-path";
 
 export default defineEventHandler(async (event) => {
   const token = getCookie(event, "auth_token");
   const query = getQuery(event) as Partial<Filters>;
   try {
-    const { data } = await apiClient.get<
-      AxiosResponse<OrganizationPaginateResponse>
-    >(ORGANIZATION, {
-      headers: {
-        Authorization: token,
+    const { data } = await apiClient.get<AxiosResponse<ConversationResponse>>(
+      API_GUEST_CONVERSATION,
+      {
+        headers: {
+          Authorization: token,
+        },
+        params: query,
       },
-      params: query,
-    });
+    );
 
     return data;
   } catch (err: any) {
