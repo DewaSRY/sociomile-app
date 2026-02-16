@@ -123,10 +123,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.AuthResponse"
                         }
                     },
                     "400": {

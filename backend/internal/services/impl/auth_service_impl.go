@@ -92,7 +92,7 @@ func (t *authServiceImpl) Login(req requestdto.LoginRequest) (*responsedto.AuthR
 
 	return &responsedto.AuthResponse{
 		Token: token,
-		User: t.mappedToUserProfile(&user),
+		User:  t.mappedToUserProfile(&user),
 	}, nil
 }
 
@@ -138,6 +138,18 @@ func (t *authServiceImpl) mappedToUserProfile(user *models.UserModel) responsedt
 
 }
 
-func (t *authServiceImpl) RefreshToken(tokenString string) (string, error) {
-	return t.jwtService.RefreshToken(tokenString)
+func (t *authServiceImpl) RefreshToken(tokenString string) (*responsedto.AuthResponse, error) {
+	token, err := t.jwtService.RefreshToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	user, _ := t.jwtService.ValidateToken(token)
+
+	userResponse, _ := t.GetUserByID(user.UserID)
+
+	return &responsedto.AuthResponse{
+		Token: token,
+		User:  *userResponse,
+	}, nil
 }

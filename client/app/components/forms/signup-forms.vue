@@ -129,7 +129,7 @@ async function onSubmit(event: FormSubmitEvent<SignupForm>) {
       data.roleName === "organization_owner" ||
       data.roleName === "organization_sales"
     ) {
-      await navigateTo("/hub/organizations");
+      await navigateTo("/organization/dashboard");
       return;
     } else {
       await navigateTo("/guest/dashboard");
