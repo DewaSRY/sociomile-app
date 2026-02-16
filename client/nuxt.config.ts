@@ -11,7 +11,6 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/ui",
     "@artmizu/nuxt-prometheus",
-    "@formkit/nuxt",
   ],
   css: ["~/assets/css/main.css"],
 
