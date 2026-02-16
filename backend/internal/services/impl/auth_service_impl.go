@@ -12,16 +12,14 @@ import (
 	"gorm.io/gorm"
 )
 
-
-type authServiceImpl struct{
-	db *gorm.DB
+type authServiceImpl struct {
+	db         *gorm.DB
 	jwtService jwtLib.JwtService
 }
 
-
-func NewAuthService(db *gorm.DB,jwtService jwtLib.JwtService) services.AuthService {
+func NewAuthService(db *gorm.DB, jwtService jwtLib.JwtService) services.AuthService {
 	return &authServiceImpl{
-		db: db,
+		db:         db,
 		jwtService: jwtService,
 	}
 }
@@ -48,6 +46,13 @@ func (t *authServiceImpl) Register(req requestdto.RegisterRequest) (*responsedto
 		return nil, errors.New("failed to create user")
 	}
 
+	if err := t.db.
+		Preload("Role").
+		Preload("Organization").
+		First(&user, user.ID).Error; err != nil {
+		return nil, errors.New("failed to load user relations")
+	}
+
 	token, err := t.jwtService.GenerateToken(user.ID, user.Email, user.RoleID, user.OrganizationID)
 	if err != nil {
 		return nil, errors.New("failed to generate token")
@@ -55,17 +60,13 @@ func (t *authServiceImpl) Register(req requestdto.RegisterRequest) (*responsedto
 
 	return &responsedto.AuthResponse{
 		Token: token,
-		User: responsedto.UserData{
-			ID:    user.ID,
-			Email: user.Email,
-			Name:  user.Name,
-		},
+		User:  t.mappedToUserProfile(&user),
 	}, nil
 }
 
 func (t *authServiceImpl) Login(req requestdto.LoginRequest) (*responsedto.AuthResponse, error) {
 	var user models.UserModel
-	
+
 	if err := t.db.Where("email = ?", req.Email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("invalid email or password")
@@ -77,6 +78,13 @@ func (t *authServiceImpl) Login(req requestdto.LoginRequest) (*responsedto.AuthR
 		return nil, errors.New("invalid email or password")
 	}
 
+	if err := t.db.
+		Preload("Role").
+		Preload("Organization").
+		First(&user, user.ID).Error; err != nil {
+		return nil, errors.New("failed to load user relations")
+	}
+
 	token, err := t.jwtService.GenerateToken(user.ID, user.Email, user.RoleID, user.OrganizationID)
 	if err != nil {
 		return nil, errors.New("failed to generate token")
@@ -84,15 +92,11 @@ func (t *authServiceImpl) Login(req requestdto.LoginRequest) (*responsedto.AuthR
 
 	return &responsedto.AuthResponse{
 		Token: token,
-		User: responsedto.UserData{
-			ID:    user.ID,
-			Email: user.Email,
-			Name:  user.Name,
-		},
+		User: t.mappedToUserProfile(&user),
 	}, nil
 }
 
-func (t *authServiceImpl) GetUserByID(userID uint) (*models.UserModel, error) {
+func (t *authServiceImpl) GetUserByID(userID uint) (*responsedto.UserProfileData, error) {
 	var user models.UserModel
 	if err := t.db.First(&user, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -100,7 +104,38 @@ func (t *authServiceImpl) GetUserByID(userID uint) (*models.UserModel, error) {
 		}
 		return nil, errors.New("failed to fetch user")
 	}
-	return &user, nil
+
+	if err := t.db.
+		Preload("Role").
+		Preload("Organization").
+		First(&user, user.ID).Error; err != nil {
+		return nil, errors.New("failed to load user relations")
+	}
+
+	result := t.mappedToUserProfile(&user)
+	return &result, nil
+}
+
+func (t *authServiceImpl) mappedToUserProfile(user *models.UserModel) responsedto.UserProfileData {
+	result := responsedto.UserProfileData{
+		ID:       user.ID,
+		Email:    user.Email,
+		Name:     user.Name,
+		RoleName: user.Role.Name,
+	}
+
+	if user.Organization != nil {
+		result.Organization = &responsedto.OrganizationResponse{
+			ID:        user.Organization.ID,
+			Name:      user.Organization.Name,
+			OwnerID:   user.Organization.OwnerID,
+			CreatedAt: user.Organization.CreatedAt,
+			UpdatedAt: user.Organization.UpdatedAt,
+		}
+	}
+
+	return result
+
 }
 
 func (t *authServiceImpl) RefreshToken(tokenString string) (string, error) {

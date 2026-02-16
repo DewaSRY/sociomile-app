@@ -135,7 +135,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Success      201  {object}  responsedto.UserData
+// @Success      201  {object}  responsedto.UserProfileData
 // @Failure      401  {object}  responsedto.ErrorResponse
 // @Router       /auth/profile [get]
 // GetProfile retrieves the authenticated user's profile
@@ -153,7 +153,7 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.service.GetUserByID(userID)
+	result, err := h.service.GetUserByID(userID)
 	if err != nil {
 		errorData := responsedto.ErrorResponse{
 			Message: "User not authenticated",
@@ -163,12 +163,6 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 		logger.ErrorLog("User not authenticated", errorData)
 		utils.WriteJSONResponse(w, http.StatusUnauthorized, errorData)
 		return
-	}
-
-	result := responsedto.UserData{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
 	}
 
 	logger.InfoLog("User login successfully", result)

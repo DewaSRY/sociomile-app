@@ -135,7 +135,7 @@ definitions:
       token:
         type: string
       user:
-        $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData'
+        $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserProfileData'
     type: object
   DewaSRY_sociomile-app_pkg_dtos_responsedto.CommonResponse:
     properties:
@@ -329,6 +329,19 @@ definitions:
       name:
         type: string
     type: object
+  DewaSRY_sociomile-app_pkg_dtos_responsedto.UserProfileData:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization:
+        $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse'
+      roleName:
+        type: string
+    type: object
 info:
   contact: {}
   description: This is a Sociomile application server with authentication.
@@ -376,7 +389,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData'
+            $ref: '#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserProfileData'
         "401":
           description: Unauthorized
           schema:

@@ -83,7 +83,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData"
+                            "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserProfileData"
                         }
                     },
                     "401": {
@@ -1248,7 +1248,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserData"
+                    "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.UserProfileData"
                 }
             }
         },
@@ -1543,6 +1543,26 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "DewaSRY_sociomile-app_pkg_dtos_responsedto.UserProfileData": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization": {
+                    "$ref": "#/definitions/DewaSRY_sociomile-app_pkg_dtos_responsedto.OrganizationResponse"
+                },
+                "roleName": {
                     "type": "string"
                 }
             }
