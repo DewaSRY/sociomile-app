@@ -5,7 +5,6 @@ export const useProfile = () => {
   const pending = useState<boolean>("profile-pending", () => false);
 
   const fetchProfile = async () => {
-    if (profile.value) return profile.value;
     if (pending.value) return;
 
     pending.value = true;
@@ -22,9 +21,14 @@ export const useProfile = () => {
     return profile.value;
   };
 
+  const reset = () => {
+    profile.value = null;
+  };
+
   return {
     profile,
     fetchProfile,
     pending,
+    reset,
   };
 };
