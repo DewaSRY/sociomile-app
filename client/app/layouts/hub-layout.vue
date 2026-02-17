@@ -2,9 +2,9 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 import UserProfile from "~/components/ui/user-profile.vue";
 import AuthorProfile from "~/components/ui/author-profile.vue";
-import { useProfile } from "~/composables/useProfile";
+import { useProfile } from "~/composables/auth/useProfile";
 
-const { profile, fetchProfile } = useProfile();
+const { profile, fetchProfile, reset } = useProfile();
 const open = ref(false);
 const links = [
   [
@@ -26,6 +26,11 @@ const groups = computed(() => [
     items: links.flat(),
   },
 ]);
+
+onUnmounted(() => {
+  reset()
+})
+
 await fetchProfile();
 </script>
 

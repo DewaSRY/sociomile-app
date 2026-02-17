@@ -10,7 +10,9 @@ import { API_AUTH_REFRESH } from "$shared/constants/api-path";
 
 export default defineEventHandler(async (event) => {
   try {
-    const token = getCookie(event, "auth_token");
+    const token = getCookie(event, "auth_token") ?? ""
+
+    const [_, tokenString] = token?.split(" ")
 
     const { data } = await apiClient.post<
       RefreshTokenRequest,
@@ -18,7 +20,7 @@ export default defineEventHandler(async (event) => {
     >(
       API_AUTH_REFRESH,
       {
-        token: token,
+        token: tokenString,
       },
       {
         withCredentials: true,
@@ -33,7 +35,7 @@ export default defineEventHandler(async (event) => {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return { success: true };
+    return data.user;
   } catch (error: any) {
     const err = error as AxiosError<any>;
     throw createError({

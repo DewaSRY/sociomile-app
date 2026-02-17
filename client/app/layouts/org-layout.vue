@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
-import AuthorProfile from '~/components/ui/author-profile.vue';
+import AuthorProfile from "~/components/ui/author-profile.vue";
 import UserProfile from "~/components/ui/user-profile.vue";
-const { profile, fetchProfile } = useProfile();
+import { useProfile } from "~/composables/auth/useProfile";
+const { profile, fetchProfile, reset } = useProfile();
 const open = ref(false);
 const links = [
   [
@@ -24,7 +25,13 @@ const groups = computed(() => [
     items: links.flat(),
   },
 ]);
+
+onUnmounted(() => {
+  reset()
+})
+
 await fetchProfile();
+
 </script>
 
 <template>
@@ -71,7 +78,7 @@ await fetchProfile();
       </template>
 
       <template #footer>
-         <AuthorProfile/>
+        <AuthorProfile />
       </template>
     </UDashboardSidebar>
 

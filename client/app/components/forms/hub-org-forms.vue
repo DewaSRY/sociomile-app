@@ -1,25 +1,31 @@
 <template>
   <div class="w-full max-w-md mx-auto">
     <FormHeaderUi
-      title="Create Account"
-      subtitle="Sign up to get started with your free account"
+      title="Create New Organization"
+      subtitle="Create New Organization"
     />
-
     <UForm
       ref="formRef"
-      :schema="SignupFormSchema"
+      :schema="RegisterOrganizationRequestSchema"
       :state="formState"
       class="space-y-4"
-      :validate="validate"
       :validate-on="['blur', 'change', 'input']"
       @submit="onSubmit"
     >
       <div class="flex flex-col gap-2">
         <TextInputUi
           v-model="formState.name"
-          label="Full Name"
+          label="Organization Name"
+          placeholder="Super CORP"
+          name="name"
+          required
+        />
+
+        <TextInputUi
+          v-model="formState.ownerName"
+          label="Owner Name"
           placeholder="John Doe"
-          name="username"
+          name="ownerName"
           required
         />
 
@@ -40,20 +46,15 @@
           required
         />
 
-        <PasswordInputUi
-          v-model="formState.confirmPassword"
-          label="Confirm Password"
-          placeholder="Re-enter your password"
-          name="confirmPassword"
-          required
-        />
-
-        <!-- Sign Up Button -->
-        <SubmitButtonUi
-          label="Create Account"
+        <UButton
+          type="submit"
+          variant="solid"
+          size="xl"
           :loading="isLoading"
           :disabled="isFormInvalid || isLoading"
-        />
+        >
+          <slot>Submit</slot>
+        </UButton>
       </div>
     </UForm>
   </div>
@@ -63,18 +64,21 @@
 import PasswordInputUi from "$components/ui/password-input-ui.vue";
 import TextInputUi from "$components/ui/text-input-ui.vue";
 import EmailInputUi from "$components/ui/email-input-ui.vue";
-import SubmitButtonUi from "$components/ui/submit-button-ui.vue";
 import FormHeaderUi from "$components/ui/form-header-ui.vue";
-import type { FormSubmitEvent, FormError, Form } from "@nuxt/ui";
-import { API_AUTH_SIGNUP } from "$shared/constants/api-path";
+import type { FormSubmitEvent, Form } from "@nuxt/ui";
+import { HUB_ORGANIZATION } from "$shared/constants/api-path";
 
-import type { SignupForm, RegisterRequest } from "$shared/types";
-import { SignupFormSchema } from "$shared/types";
+import type { CommonResponse, RegisterOrganizationRequest } from "$shared/types";
+import { RegisterOrganizationRequestSchema } from "$shared/types";
 
-const formRef = ref<Form<SignupForm> | null>(null);
-const defaultState: Partial<SignupForm> = {};
+const formRef = ref<Form<RegisterOrganizationRequest> | null>(null);
+const defaultState: Partial<RegisterOrganizationRequest> = {};
 const isLoading = ref(false);
-const formState = reactive<Partial<SignupForm>>(defaultState);
+const formState = reactive<Partial<RegisterOrganizationRequest>>(defaultState);
+
+const emit = defineEmits<{
+  (e: "onSubmit", value: CommonResponse): void
+}>()
 
 const isFormInvalid = computed<boolean>(() => {
   if (!formRef.value?.dirty) {
@@ -85,32 +89,18 @@ const isFormInvalid = computed<boolean>(() => {
 
 const toast = useToast();
 
-function validate(state: Partial<SignupForm>): FormError[] {
-  const errors: FormError<string>[] = [];
-  if (!state.email) errors.push({ name: "email", message: "Required" });
-  if (!state.password) errors.push({ name: "password", message: "Required" });
-  if (state.password && state.confirmPassword) {
-    if (state.password !== state.confirmPassword) {
-      errors.push({
-        name: "confirmPassword",
-        message: "Passwords do not match",
-      });
-    }
-  }
-  return errors;
-}
-
-async function onSubmit(event: FormSubmitEvent<SignupForm>) {
+async function onSubmit(event: FormSubmitEvent<RegisterOrganizationRequest>) {
   isLoading.value = true;
 
   try {
-    const body: RegisterRequest = {
+    const body: RegisterOrganizationRequest = {
       email: event.data.email,
       password: event.data.password,
       name: event.data.name,
+      ownerName: event.data.ownerName,
     };
 
-    const data = await $fetch<UserProfileData>(API_AUTH_SIGNUP, {
+    const data = await $fetch<CommonResponse>(HUB_ORGANIZATION, {
       method: "POST",
       body,
     });
@@ -121,23 +111,12 @@ async function onSubmit(event: FormSubmitEvent<SignupForm>) {
       color: "success",
       icon: "i-heroicons-check-circle",
     });
+    
+    emit("onSubmit", data)
 
-    if (data.roleName === "super_admin") {
-      await navigateTo("/hub/dashboard");
-      return;
-    } else if (
-      data.roleName === "organization_owner" ||
-      data.roleName === "organization_sales"
-    ) {
-      await navigateTo("/organization/dashboard");
-      return;
-    } else {
-      await navigateTo("/guest/dashboard");
-      return;
-    }
   } catch (error) {
     toast.add({
-      title: "Sign Up Failed",
+      title: "Failed to Create New Organization",
       description: "Unable to create account. Please try again.",
       color: "error",
       icon: "i-heroicons-x-circle",

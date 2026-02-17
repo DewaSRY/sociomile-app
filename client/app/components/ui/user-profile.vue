@@ -15,6 +15,7 @@ const initials = computed(() => {
     .join("")
     .toUpperCase();
 });
+
 </script>
 
 <template>
@@ -33,21 +34,19 @@ const initials = computed(() => {
           <p class="font-semibold truncate">
             {{ name }}
           </p>
-          <UBadge color="primary" variant="soft" size="xs">
-            {{ userRole }}
-          </UBadge>
         </div>
-
-
-
-        <div class="flex items-center gap-2 mt-1 flex-wrap">
+        <div class="flex gap-2 ">
           <UBadge
             v-if="organizationName"
             color="neutral"
             variant="outline"
-            size="xs"
+            size="sm"
           >
             {{ organizationName }}
+          </UBadge>
+
+            <UBadge color="primary" variant="soft" size="sm"  class="block xl:hidden">
+            {{ userRole }}
           </UBadge>
         </div>
       </div>

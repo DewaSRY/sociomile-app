@@ -180,7 +180,7 @@ func (t *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        request body requestdto.RefreshTokenRequest true "Refresh Token Request"
-// @Success      201  {object}  map[string]string
+// @Success      201  {object}  responsedto.AuthResponse
 // @Failure      400  {object}  responsedto.ErrorResponse
 // @Router       /auth/refresh [post]
 // RefreshToken generates a new JWT token
@@ -208,7 +208,7 @@ func (t *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newToken, err := t.service.RefreshToken(req.Token)
+	result, err := t.service.RefreshToken(req.Token)
 	if err != nil {
 		errorData := responsedto.ErrorResponse{
 			Message: "Invalid or expired token",
@@ -220,9 +220,6 @@ func (t *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := map[string]string{
-		"token": newToken,
-	}
 
 	logger.InfoLog("User registered successfully", result)
 	utils.WriteJSONResponse(w, http.StatusCreated, result)

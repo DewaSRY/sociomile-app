@@ -26,8 +26,8 @@ withDefaults(defineProps<Props>(), {
   label: 'Submit',
   color: 'primary',
   variant: 'solid',
-  block: true,
   size: 'xl',
+  block: true,
   loading: false,
   disabled: false
 })

@@ -35,6 +35,9 @@
         />
       </div>
     </UForm>
+    <div class="w-full p-4">
+      <RefreshButton />
+    </div>
   </div>
 </template>
 
@@ -48,6 +51,7 @@ import type { FormSubmitEvent, FormError, Form } from "@nuxt/ui";
 import type { LoginRequest } from "$shared/types";
 import { LoginRequestSchema } from "$shared/types";
 import { API_AUTH_SIGNIN } from "$shared/constants/api-path";
+import RefreshButton from "../ui/refresh-button.vue";
 
 const defaultState: Partial<LoginRequest> = {};
 const formState = reactive<Partial<LoginRequest>>({
@@ -94,7 +98,7 @@ async function onSubmit(event: FormSubmitEvent<LoginRequest>) {
       data.roleName === "organization_owner" ||
       data.roleName === "organization_sales"
     ) {
-      await navigateTo("/hub/organizations");
+      await navigateTo("/organization/dashboard");
       return;
     } else {
       await navigateTo("/guest/dashboard");

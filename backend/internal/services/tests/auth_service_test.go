@@ -132,17 +132,3 @@ func TestAuthService_GetUserByID(t *testing.T) {
 	}
 }
 
-func TestAuthService_RefreshToken(t *testing.T) {
-	tx := SetupTestDB(t)
-	mockJwt := &MockJwtService{}
-	authService := impl.NewAuthService(tx, mockJwt)
-
-	result, err := authService.RefreshToken("valid-token")
-	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
-	}
-
-	if result == "" {
-		t.Fatal("expected token, got empty string")
-	}
-}

@@ -5,12 +5,10 @@ export const OrganizationResponseSchema = z.object({
   id: z.number().int().nonnegative(),
 
   name: z.string(),
-
   ownerId: z.number().int().nonnegative(),
+  createdAt: z.coerce.date(),
 
-  createdAt: z.string().datetime(),
-
-  updatedAt: z.string().datetime(),
+  updatedAt: z.coerce.date(),
 });
 
 export type OrganizationResponse = z.infer<typeof OrganizationResponseSchema>;

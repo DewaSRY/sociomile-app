@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="guest-dashboard">
+  <!-- <UDashboardPanel id="guest-dashboard">
     <template #header>
       <UDashboardNavbar title="guest-dashboard">
         <template #leading>
@@ -12,7 +12,9 @@
     <template #body>
       <GuestDashboardPage />
     </template>
-  </UDashboardPanel>
+  </UDashboardPanel> -->
+
+     <GuestDashboardPage />
 </template>
 
 <script setup lang="ts">

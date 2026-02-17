@@ -1,6 +1,6 @@
 import { defineEventHandler } from "h3";
 import { apiClient } from "$shared/lib/api-client";
-import type { OrganizationPaginateResponse, Filters } from "$shared/types";
+import type { HubOrganizationPaginateResponse, Filters } from "$shared/types";
 import type { AxiosResponse } from "axios";
 import { HUB_ORGANIZATION } from "$shared/constants/api-path";
 
@@ -8,15 +8,14 @@ export default defineEventHandler(async (event) => {
   const token = getCookie(event, "auth_token");
   const query = getQuery(event) as Partial<Filters>;
   try {
-    const { data } = await apiClient.get<AxiosResponse<OrganizationPaginateResponse>>(
-      HUB_ORGANIZATION,
-      {
-        headers: {
-          Authorization: token,
-        },
-        params: query,
+    const { data } = await apiClient.get<
+      AxiosResponse<HubOrganizationPaginateResponse>
+    >(HUB_ORGANIZATION, {
+      headers: {
+        Authorization: token,
       },
-    );
+      params: query,
+    });
 
     return data;
   } catch (err: any) {

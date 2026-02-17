@@ -1,17 +1,17 @@
-import { API_AUTH_PROFILE } from "~~/shared/constants/api-path";
+import { API_AUTH_REFRESH } from "~~/shared/constants/api-path";
 
-export const useProfile = () => {
+export const useRefresh = () => {
   const profile = useState<UserProfileData | null>("profile", () => null);
   const pending = useState<boolean>("profile-pending", () => false);
 
-  const fetchProfile = async () => {
+  const fetchRefresh = async () => {
     if (profile.value) return profile.value;
     if (pending.value) return;
 
     pending.value = true;
 
     try {
-      const data = await $fetch<UserProfileData>(API_AUTH_PROFILE);
+      const data = await $fetch<UserProfileData>(API_AUTH_REFRESH);
       profile.value = data;
     } catch (err) {
       profile.value = null;
@@ -24,7 +24,7 @@ export const useProfile = () => {
 
   return {
     profile,
-    fetchProfile,
+    fetchRefresh,
     pending,
   };
 };
