@@ -28,14 +28,14 @@ const groups = computed(() => [
 ]);
 
 onUnmounted(() => {
-  reset()
-})
+  reset();
+});
 
 await fetchProfile();
 </script>
 
 <template>
-  <UDashboardGroup unit="rem">
+  <UDashboardGroup unit="rem" class="h-screen" orientation="horizontal">
     <UDashboardSidebar
       id="default"
       v-model:open="open"
@@ -81,9 +81,7 @@ await fetchProfile();
         <AuthorProfile />
       </template>
     </UDashboardSidebar>
-
     <UDashboardSearch :groups="groups" />
-
     <slot />
   </UDashboardGroup>
 </template>

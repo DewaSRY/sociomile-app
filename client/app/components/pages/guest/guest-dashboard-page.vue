@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import GuestConversation from "~/components/conversations/guest-conversation.vue";
+</script>
+
 <template>
-    <h1>guest page</h1>
+  <GuestConversation />
 </template>
