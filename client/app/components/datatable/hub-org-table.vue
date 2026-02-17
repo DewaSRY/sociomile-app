@@ -33,7 +33,18 @@ const columns: TableColumn<HubOrganizationResponse>[] = [
   },
 ];
 
+
+async function refresh() {
+  await fetchOrganizations()
+}
+
+
 await fetchOrganizations();
+
+defineExpose({
+  refresh
+})
+
 </script>
 
 <template>
