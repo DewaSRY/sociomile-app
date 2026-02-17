@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { useGuestMessages } from "~/composables/guest/useGuestMessages";
 import MessageBubble from "../ui/message-bubble.vue";
 const { fetchGuestMessages, messages } = useGuestMessages();
-// import type { Mail } from '~/types'
 
 const props = defineProps<{
   id: number;

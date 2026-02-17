@@ -8,20 +8,7 @@ const { conversation, fetchGuestConversation, isLoading } =
   useGuestConversation();
 
 const conversationList = computed(() => conversation.value?.data ?? []);
-// import type { Mail } from '~/types'
 
-// const selectedTab = ref('all')
-
-// const { data: mails } = await useFetch<Mail[]>('/api/mails', { default: () => [] })
-
-// Filter mails based on the selected tab
-// const filteredMails = computed(() => {
-//   if (selectedTab.value === 'unread') {
-//     return mails.value.filter(mail => !!mail.unread)
-//   }
-
-//   return mails.value
-// })
 
 const selectedConversation = ref<ConversationResponse | null>();
 
@@ -69,14 +56,19 @@ await fetchGuestConversation();
   </UDashboardPanel>
 
   <template v-if="selectedConversation">
-    <GuestConversationBubble :id="selectedConversation.id" />
+    <GuestConversationBubble
+      :key="selectedConversation.id"
+      :id="selectedConversation.id"
+      @close="selectedConversation = null"
+    />
+  </template>
+  <template v-else>
+    <div class="h-full w-full flex justify-center items-center">
+      <UIcon name="i-lucide-inbox" class="size-32 text-dimmed" />
+    </div>
   </template>
 
-  <!-- <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null" />
 
-  <div v-else class="hidden lg:flex flex-1 items-center justify-center">
-    <UIcon name="i-lucide-inbox" class="size-32 text-dimmed" />
-  </div> -->
 
   <!-- v-model:open="true" -->
   <ClientOnly>
@@ -84,6 +76,11 @@ await fetchGuestConversation();
       <template #content>
         <template v-if="selectedConversation">
           <GuestConversationBubble :id="selectedConversation.id" />
+        </template>
+        <template v-else>
+          <div class="h-full w-full flex justify-center items-center">
+            <UIcon name="i-lucide-inbox" class="size-32 text-dimmed" />
+          </div>
         </template>
         <!-- <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null" /> -->
       </template>
